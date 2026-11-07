@@ -82,7 +82,7 @@ table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--line-strong); }
 td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-.tag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid transparent; }
+.tag { display: inline-block; white-space: nowrap; font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid transparent; }
 .tag.draft { background: var(--panel-2); color: var(--muted); }
 .tag.submitted { background: var(--info-soft); color: var(--info); }
 .tag.approved { background: var(--ok-soft); color: var(--ok); }
@@ -252,6 +252,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
       <tr><td>Month-end recognition</td><td><code>JournalEntry</code></td><td>Dr Unearned Revenue / Cr Service Revenue per client, hours × block rate.</td></tr>
       <tr><td>Monthly invoice</td><td><code>Invoice</code></td><td>Lines: T&amp;M hours, Azure Backup (per GB), Hardware, Enable RMM (quarterly, by client flag).</td></tr>
       <tr><td>Payroll</td><td>QBO Payroll (UI)</td><td>Not writable via API. Hours arrive as TimeActivity; Drew approves the run; direct deposit as today.</td></tr>
+      <tr><td>Invoice due / past due</td><td><code>Invoice.DueDate</code>, <code>Balance</code> + payment webhook</td><td>App polls open invoices hourly and gets webhooks on payment; due state drives portal banners and the reminder schedule. Reminders are sent by the app (branded, portal link) rather than QBO's built-in reminders so wording, cadence and policy are yours.</td></tr>
       <tr><td>Anything fails</td><td><code>SyncLog</code> + retry</td><td>Entries stay <i>Approved</i> (not <i>Synced</i>) and retry every 15 min; red banner in Billing until clear.</td></tr>
     </tbody>
   </table>
@@ -297,7 +298,27 @@ function seed(scenario) {
     { id: 5, emp: 'rick',   client: 'heights',date:'2026-11-05', dur: 0.25,mode: 'remote', note: 'Password reset, MFA re-enroll', status: 'approved', billed: 0.25, synced: true, block: 'B-1005' },
     { id: 6, emp: 'robert', client: 'bayou', date: '2026-10-29', dur: 3.0, mode: 'onsite', note: 'Switch replacement, VLAN retag', status: 'approved', billed: 3, synced: true, block: 'B-1001' }
   ];
-  return { blocks, entries, ledger: [
+  const invoices = [
+    { id: 'INV-1031', client: 'bayou',   desc: 'Azure Backup 412 GB · Enable RMM Q4', amount: 499.44, issued: '2026-10-01', due: '2026-10-31', paid: null },
+    { id: 'INV-1029', client: 'bayou',   desc: 'Prepaid Support Block 40',            amount: 5600,   issued: '2026-08-14', due: '2026-09-13', paid: '2026-08-20' },
+    { id: 'INV-1035', client: 'west',    desc: 'Azure Backup 96 GB',                   amount: 11.52,  issued: '2026-11-01', due: '2026-12-01', paid: null },
+    { id: 'INV-1026', client: 'west',    desc: 'Prepaid Support Block 20',            amount: 3200,   issued: '2026-09-30', due: '2026-10-30', paid: '2026-10-02' },
+    { id: 'INV-1033', client: 'gulf',    desc: 'Azure Backup 1,180 GB · RMM Q4 · UniFi switch', amount: 1280.60, issued: '2026-10-01', due: '2026-10-31', paid: null },
+    { id: 'INV-1034', client: 'gulf',    desc: 'Prepaid Support Block 40',            amount: 5600,   issued: '2026-10-28', due: '2026-11-27', paid: null },
+    { id: 'INV-1030', client: 'heights', desc: 'Azure Backup 220 GB',                  amount: 26.40,  issued: '2026-10-01', due: '2026-10-31', paid: '2026-10-15' },
+    { id: 'INV-1032', client: 'heights', desc: 'Prepaid Support Block 20',            amount: 3200,   issued: '2026-10-05', due: '2026-11-04', paid: null }
+  ];
+  const reminders = [
+    { ts: '2026-10-28', client: 'bayou', inv: 'INV-1031', kind: 'Due in 3 days', to: 'Janet R.' },
+    { ts: '2026-10-31', client: 'bayou', inv: 'INV-1031', kind: 'Due today', to: 'Janet R.' },
+    { ts: '2026-11-07', client: 'bayou', inv: 'INV-1031', kind: 'Past due · 7 days', to: 'Janet R.' },
+    { ts: '2026-10-28', client: 'gulf',  inv: 'INV-1033', kind: 'Due in 3 days', to: 'Tom A.' },
+    { ts: '2026-10-31', client: 'gulf',  inv: 'INV-1033', kind: 'Due today', to: 'Tom A.' },
+    { ts: '2026-11-07', client: 'gulf',  inv: 'INV-1033', kind: 'Past due · 7 days', to: 'Tom A.' },
+    { ts: '2026-11-01', client: 'heights', inv: 'INV-1032', kind: 'Due in 3 days', to: 'Maria S.' },
+    { ts: '2026-11-04', client: 'heights', inv: 'INV-1032', kind: 'Due today', to: 'Maria S.' }
+  ];
+  return { blocks, entries, invoices, reminders, ledger: [
     { ts: '10-29 17:02', block: 'B-1001', client: 'bayou', delta: -3, memo: 'Robert · switch replacement' },
     { ts: '11-05 09:10', block: 'B-1005', client: 'heights', delta: -0.25, memo: 'Rick · password reset' }
   ], accrual: { mark: 0, rick: 12.5, robert: 180 }, qbo: [
@@ -312,6 +333,8 @@ const DECISIONS = [
   { key: 'overdraft', q: 'When a block runs out mid-entry', opts: [
       ['tm', 'Bill overage at T&M ($180)'], ['next', 'Overdraft; next block absorbs it'], ['refuse', 'Hold entry until a block is sold']],
     note: 'Live in the mock: switch to the "Block exhausted" scenario, sign in as Drew and approve.' },
+  { key: 'pastdue', q: 'When a client is past due', opts: [['remind', 'Reminders only'], ['noblocks', 'Reminders + no new block sales'], ['pause', 'Reminders + pause non-emergency support at 30 days']], note: 'Live in the mock: Bayou Title and Gulf Coast are 7 days past due. Check Receivables as Drew and the portal as their contact.' },
+  { key: 'terms', q: 'Payment terms', opts: [['net30', 'Net 30 (current)'], ['net15', 'Net 15'], ['receipt', 'Due on receipt for blocks, Net 30 for monthly']] },
   { key: 'approver', q: 'Who approves time', opts: [['drew', 'Drew only'], ['drew-mark', 'Drew or Mark'], ['auto', 'Auto-approve, Drew reviews weekly']] },
   { key: 'salaried', q: 'Salaried staff logging billable time', opts: [['burn', 'Burns client block, no pay effect'], ['nolog', 'Salaried staff don’t log time']] },
   { key: 'storage', q: 'Azure backup GB source', opts: [['api', 'Read from Azure Cost Management API'], ['manual', 'Keyed in monthly']] },
@@ -341,6 +364,27 @@ function billedHours(dur, mode) {
   const rounded = Math.ceil(d / 0.25 - 1e-9) * 0.25;
   const min = mode === 'onsite' ? 1 : 0.25;
   return Math.max(rounded, min);
+}
+const TODAY = '2026-11-07';
+function daysBetween(a, b) { return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function invStatus(inv) {
+  if (inv.paid) return { key: 'paid', label: 'Paid ' + inv.paid, cls: 'approved' };
+  const d = daysBetween(TODAY, inv.due);
+  if (d < 0) return { key: 'past', label: 'Past due ' + (-d) + ' day' + (d === -1 ? '' : 's'), cls: 'held', days: -d };
+  if (d === 0) return { key: 'today', label: 'Due today', cls: 'retry' };
+  if (d <= 7) return { key: 'soon', label: 'Due in ' + d + ' day' + (d === 1 ? '' : 's'), cls: 'retry' };
+  return { key: 'open', label: 'Due ' + inv.due, cls: 'submitted' };
+}
+function arFor(cid) { const open = state.data.invoices.filter(i => i.client === cid && !i.paid); const past = open.filter(i => invStatus(i).key === 'past'); return { open, past, openAmt: open.reduce((a, i) => a + i.amount, 0), pastAmt: past.reduce((a, i) => a + i.amount, 0), maxDays: past.reduce((a, i) => Math.max(a, invStatus(i).days), 0) }; }
+function sendReminder(inv) {
+  const c = clientOf(inv.client); const st = invStatus(inv);
+  state.confirm = { title: 'Send reminder for ' + inv.id + '?', body: 'Emails ' + c.contact + ' at ' + c.name + ': "' + st.label + ' — ' + money(inv.amount) + '" with the pay-online link and a copy to you. Logged in the reminder history.', ok: 'Send', onOk: () => {
+    state.data.reminders.unshift({ ts: TODAY, client: inv.client, inv: inv.id, kind: st.label + ' (manual)', to: c.contact });
+    state.confirm = null; toast('Reminder sent to ' + c.contact + ' for ' + inv.id + '.');
+  } }; render();
+}
+function markPaid(inv) {
+  state.confirm = { title: 'Record payment for ' + inv.id + '?', body: 'Normally QuickBooks tells the app when a payment posts (webhook). This simulates that: ' + money(inv.amount) + ' from ' + clientOf(inv.client).name + ' marks the invoice paid and stops reminders.', ok: 'Record payment', onOk: () => { inv.paid = TODAY; state.confirm = null; toast('Payment recorded for ' + inv.id + '. Reminders stopped.'); } }; render();
 }
 function isAdmin() { return state.role === 'drew'; }
 function isTech() { return ['mark', 'rick', 'robert'].includes(state.role); }
@@ -422,6 +466,7 @@ function buyBlock(cid, size) {
     ok: 'Send invoice', onOk: () => {
       const id = 'B-' + (state.data.nextBlock++);
       state.data.blocks.push({ id, client: cid, hours: size, rate: BLOCK_PRICE[size], remaining: size, bought: '2026-11-07' });
+      state.data.invoices.unshift({ id: 'INV-' + (1040 + state.data.nextBlock), client: cid, desc: 'Prepaid Support Block ' + size, amount: size * BLOCK_PRICE[size], issued: TODAY, due: '2026-12-07', paid: null });
       state.data.ledger.unshift({ ts: '11-07 ' + nowish(), block: id, client: cid, delta: size, memo: 'Block sold · Invoice INV-' + (1040 + state.data.nextBlock) });
       state.data.qbo.unshift({ id: 'INV-' + (1040 + state.data.nextBlock), what: 'Invoice · ' + clientOf(cid).name + ' · Prepaid Support Block ' + size + ' · ' + money(size * BLOCK_PRICE[size]), status: state.scenario === 'qbodown' ? 'retry' : 'synced' });
       state.data.entries.filter(e => e.status === 'held' && e.client === cid).forEach(e => { e.status = 'submitted'; delete e.hold; });
@@ -457,7 +502,7 @@ function viewsFor() {
   if (EMP[state.role].type === 'billed') v.push(['pay', 'My pay', 'i-doc']);
   if (isAdmin()) v.push(['approvals', 'Approvals', 'i-check']);
   v.push(['clients', 'Clients', 'i-users']);
-  if (isAdmin()) v.push(['billing', 'Billing & QBO', 'i-doc'], ['portal', 'Portal preview', 'i-globe']);
+  if (isAdmin()) v.push(['ar', 'Receivables', 'i-warn'], ['billing', 'Billing & QBO', 'i-doc'], ['portal', 'Portal preview', 'i-globe']);
   return v;
 }
 
@@ -513,6 +558,7 @@ function renderClients() {
       return '<div class="card"><h5>' + esc(c.name) + '</h5><div class="kpi">' + rem.toFixed(2) + '<small>h remaining of ' + tot + '</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
         bl.map(b => '<div class="mini">' + esc(b.id) + ' · ' + b.hours + 'h @ $' + b.rate + ' · bought ' + esc(b.bought) + ' · <b class="' + (b.remaining < 0 ? 'neg' : '') + '">' + b.remaining.toFixed(2) + ' left</b></div>').join('') +
         '<div class="mini" style="margin-top:6px">T&amp;M $' + c.tm + '/h · Azure backup ' + c.gb + ' GB · RMM ' + (c.rmm ? 'quarterly' : 'no') + '</div>' +
+        (function () { const ar = arFor(c.id); return ar.past.length ? '<div class="banner bad" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span><b>Past due ' + money(ar.pastAmt) + '</b> · ' + ar.maxDays + ' days · ' + ar.past.length + ' invoice' + (ar.past.length === 1 ? '' : 's') + '</span></div>' : ar.open.length ? '<div class="mini">Open: ' + money(ar.openAmt) + ', next due ' + esc(ar.open.slice().sort((a, b) => a.due.localeCompare(b.due))[0].due) + '</div>' : '<div class="mini pos">All invoices paid</div>'; })() +
         (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Exhausted. ' : 'Low. ') + 'Low-balance email sent to ' + esc(c.contact) + ' with 20/40 block offer.</span></div>' : '') +
         '</div>'; }).join('') + '</div>';
 }
@@ -548,15 +594,17 @@ function renderPortal() {
   const rem = sumRemaining(c.id); const tot = bl.reduce((a, b) => a + b.hours, 0);
   const cls = rem <= 0 ? 'out' : rem < LOW_THRESHOLD ? 'low' : '';
   const ent = state.data.entries.filter(e => e.client === c.id && e.status === 'approved');
+  const ar = arFor(c.id);
   return '<h4>' + esc(c.name) + '</h4><p class="sub">Welcome back, ' + esc(c.contact) + ' · Camquest Systems · (281) 880-6896 · info@cqsys.com' + (isAdmin() ? ' · <i>admin preview of what the client sees</i>' : '') + '</p>' +
+    (ar.past.length ? '<div class="banner bad" style="font-size:15px;padding:12px 14px"><svg class="i"><use href="#i-warn"/></svg><span><b>' + money(ar.pastAmt) + ' is past due</b> (' + ar.past.map(i => esc(i.id) + ', due ' + esc(i.due)).join('; ') + '). Pay online below or call (281) 880-6896 if something looks wrong.' + ((state.picks.pastdue || 'remind') === 'noblocks' ? ' New support blocks can\u2019t be purchased until the balance is current.' : '') + '</span></div>' : ar.open.length ? '<div class="banner info"><svg class="i"><use href="#i-doc"/></svg><span>' + money(ar.openAmt) + ' open · next payment due ' + esc(ar.open.slice().sort((a, b) => a.due.localeCompare(b.due))[0].due) + '.</span></div>' : '') +
     (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Your block is used up. ' : 'You have ' + rem.toFixed(2) + ' hours left. ') + 'Buy a block below to keep your rate; otherwise time bills at $' + c.tm + '/h.</span></div>' : '') +
     '<div class="grid2"><div class="card"><h5>Hours remaining</h5><div class="kpi">' + rem.toFixed(2) + '<small>of ' + tot + ' purchased</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
     bl.map(b => '<div class="mini">' + b.hours + '-hour block · $' + b.rate + '/h · ' + b.remaining.toFixed(2) + ' left</div>').join('') + '</div>' +
-    '<div class="card"><h5>Buy another block</h5><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn" data-buy="20">20 h · $3,200 <span class="mini">($160/h)</span></button><button class="btn primary" data-buy="40">40 h · $5,600 <span class="mini">($140/h)</span></button></div><div class="mini" style="margin-top:8px">You’ll get a QuickBooks invoice with a pay-online link. Hours unlock when payment posts.</div></div></div>' +
+    '<div class="card"><h5>Buy another block</h5>' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? '<div class="mini neg" style="margin-top:6px">Unavailable while an invoice is past due.</div>' : '') + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn"' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? ' disabled' : '') + ' data-buy="20">20 h · $3,200 <span class="mini">($160/h)</span></button><button class="btn primary"' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? ' disabled' : '') + ' data-buy="40">40 h · $5,600 <span class="mini">($140/h)</span></button></div><div class="mini" style="margin-top:8px">You’ll get a QuickBooks invoice with a pay-online link. Hours unlock when payment posts.</div></div></div>' +
     '<h3 style="margin-top:18px">Recent work</h3>' +
     (ent.length ? '<table><thead><tr><th>Date</th><th>Tech</th><th>What was done</th><th class="num">Hours</th></tr></thead><tbody>' + ent.map(e => '<tr><td>' + esc(e.date) + '</td><td>' + esc(EMP[e.emp].name) + '</td><td>' + esc(e.note) + (e.tm ? ' <span class="tag tm">' + e.tm.toFixed(2) + 'h T&amp;M</span>' : '') + '</td><td class="num">' + (e.billed || 0).toFixed(2) + '</td></tr>').join('') + '</tbody></table>' : '<div class="empty">No approved work yet this period.</div>') +
-    '<h3 style="margin-top:18px">Invoices</h3><table><tbody><tr><td>INV-1031 · Oct 1</td><td>Azure Backup ' + c.gb + ' GB' + (c.rmm ? ' · Enable RMM Q4' : '') + '</td><td class="num">' + money(c.gb * 0.12 + (c.rmm ? 450 : 0)) + '</td><td><span class="tag approved">Paid</span></td></tr>' +
-    bl.map(b => '<tr><td>' + esc(b.id.replace('B-', 'INV-')) + ' · ' + esc(b.bought) + '</td><td>Prepaid Support Block ' + b.hours + '</td><td class="num">' + money(b.hours * b.rate) + '</td><td><span class="tag approved">Paid</span></td></tr>').join('') + '</tbody></table>';
+    '<h3 style="margin-top:18px">Invoices</h3><table><thead><tr><th>Invoice</th><th class="hide-sm">For</th><th>Due</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>' +
+    state.data.invoices.filter(i => i.client === c.id).sort((a, b) => (a.paid ? 1 : 0) - (b.paid ? 1 : 0) || a.due.localeCompare(b.due)).map(i => { const st = invStatus(i); return '<tr' + (st.key === 'past' ? ' style="background:var(--bad-soft)"' : '') + '><td>' + esc(i.id) + '<div class="mini">' + esc(i.issued) + '</div></td><td class="hide-sm mini">' + esc(i.desc) + '</td><td>' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span>' + (i.paid ? '' : ' <button class="btn ghost" style="padding:2px 8px" data-paynow="' + esc(i.id) + '">Pay</button>') + '</td></tr>'; }).join('') + '</tbody></table>';
 }
 
 function renderPay() {
@@ -582,17 +630,36 @@ function renderPay() {
     '<div class="mini" style="margin-top:10px">Gross before taxes and withholding; your pay stub in QuickBooks Workforce has the net.</div>';
 }
 
+function renderAR() {
+  const open = state.data.invoices.filter(i => !i.paid).sort((a, b) => a.due.localeCompare(b.due));
+  const past = open.filter(i => invStatus(i).key === 'past');
+  const totalOpen = open.reduce((a, i) => a + i.amount, 0), totalPast = past.reduce((a, i) => a + i.amount, 0);
+  const bucket = d => d <= 0 ? 'Current' : d <= 30 ? '1–30' : d <= 60 ? '31–60' : '61+';
+  const buckets = { 'Current': 0, '1–30': 0, '31–60': 0, '61+': 0 };
+  open.forEach(i => { const st = invStatus(i); buckets[bucket(st.days || 0)] += i.amount; });
+  const policy = state.picks.pastdue || 'remind';
+  const policyText = { remind: 'reminders only', noblocks: 'reminders; no new block sales until current', pause: 'reminders; non-emergency support paused at 30 days' }[policy];
+  return '<h4>Receivables</h4><p class="sub">As of ' + TODAY + ' · ' + money(totalOpen) + ' open · <b class="neg">' + money(totalPast) + ' past due</b> across ' + past.length + ' invoice' + (past.length === 1 ? '' : 's') + ' · policy: <b>' + esc(policyText) + '</b></p>' +
+    (past.length ? '<div class="banner bad"><svg class="i"><use href="#i-warn"/></svg><span><b>' + past.length + ' past-due invoice' + (past.length === 1 ? '' : 's') + '.</b> ' + past.map(i => esc(clientOf(i.client).name) + ' ' + money(i.amount) + ' (' + invStatus(i).days + 'd)').join(' · ') + '</span></div>' : '<div class="banner ok"><svg class="i"><use href="#i-check"/></svg><span>Nothing past due.</span></div>') +
+    '<div class="grid2"><div class="card"><h5>Aging</h5><table><tbody>' + Object.keys(buckets).map(k => '<tr><td>' + k + (k === 'Current' ? ' (not yet due)' : ' days past due') + '</td><td class="num' + (k !== 'Current' && buckets[k] ? ' neg' : '') + '">' + money(buckets[k]) + '</td></tr>').join('') + '</tbody></table></div>' +
+    '<div class="card"><h5>Automatic reminder schedule</h5><table><tbody><tr><td>Due in 3 days</td><td class="mini">friendly heads-up, pay link</td></tr><tr><td>Due today</td><td class="mini">pay link</td></tr><tr><td>Past due 7 days</td><td class="mini">firmer tone, copies you</td></tr><tr><td>Past due 14 days</td><td class="mini">copies you; portal banner turns red</td></tr><tr><td>Past due 30 days</td><td class="mini">asks you to call; policy action applies</td></tr></tbody></table><div class="mini" style="margin-top:6px">Runs daily at 8:00 AM Central. Stops the moment QBO reports payment. Edit the schedule and wording in Decisions.</div></div></div>' +
+    '<h3 style="margin-top:18px">Open invoices</h3><table><thead><tr><th>Invoice</th><th>Client</th><th class="hide-sm">For</th><th>Due</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>' +
+    open.map(i => { const st = invStatus(i); return '<tr><td>' + esc(i.id) + '</td><td>' + esc(clientOf(i.client).name) + '</td><td class="hide-sm mini">' + esc(i.desc) + '</td><td>' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span></td><td style="white-space:nowrap"><button class="btn ghost" data-remind="' + esc(i.id) + '">Remind now</button> <button class="btn ghost" data-paid="' + esc(i.id) + '">Record payment</button></td></tr>'; }).join('') + '</tbody></table>' +
+    '<h3 style="margin-top:18px">Reminder history</h3><table class="ledger"><tbody>' + state.data.reminders.slice(0, 8).map(r => '<tr><td>' + esc(r.ts) + '</td><td>' + esc(clientOf(r.client).name) + '</td><td>' + esc(r.inv) + '</td><td>' + esc(r.kind) + '</td><td class="mini">→ ' + esc(r.to) + '</td></tr>').join('') + '</tbody></table>';
+}
+
 /* ---------- frame ---------- */
 function render() {
   const views = viewsFor();
   if (!views.some(v => v[0] === state.view)) state.view = views[0][0];
   const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Admin' : ' · Tech');
   const pendingCount = state.data.entries.filter(e => e.status === 'submitted' || e.status === 'held').length;
-  const content = { time: renderTime, pay: renderPay, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
+  const pastDueCount = state.data.invoices.filter(i => invStatus(i).key === 'past').length;
+  const content = { time: renderTime, pay: renderPay, ar: renderAR, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
   let html = '<div class="topbar"><span class="logo">CAM<span>QUEST</span></span><span class="tag-line">' + (state.role === 'client' ? 'Client portal · Your Trusted Technology Advisor' : 'Time &amp; Billing') + '</span><span class="spacer"></span>' +
     '<span class="who"><button id="whoBtn" aria-haspopup="menu" aria-expanded="' + state.menuOpen + '">' + esc(who) + ' ▾</button>' +
     (state.menuOpen ? '<div class="menu" role="menu"><button role="menuitem" id="menuSwitch">Switch role (use control above)</button><button role="menuitem" id="menuOut">Sign out</button></div>' : '') + '</span></div>' +
-    '<div class="body"><nav class="sidenav" aria-label="App">' + views.map(v => '<button data-view="' + v[0] + '" aria-current="' + (state.view === v[0] ? 'page' : 'false') + '"><svg class="i"><use href="#' + v[2] + '"/></svg>' + esc(v[1]) + (v[0] === 'approvals' && pendingCount ? '<span class="badge">' + pendingCount + '</span>' : '') + '</button>').join('') + '</nav>' +
+    '<div class="body"><nav class="sidenav" aria-label="App">' + views.map(v => '<button data-view="' + v[0] + '" aria-current="' + (state.view === v[0] ? 'page' : 'false') + '"><svg class="i"><use href="#' + v[2] + '"/></svg>' + esc(v[1]) + (v[0] === 'approvals' && pendingCount ? '<span class="badge">' + pendingCount + '</span>' : '') + (v[0] === 'ar' && pastDueCount ? '<span class="badge" style="background:var(--bad)">' + pastDueCount + '</span>' : '') + '</button>').join('') + '</nav>' +
     '<div class="main">' + content + '</div></div>';
   if (state.toast) html += '<div class="toast" role="status">' + esc(state.toast) + '</div>';
   if (state.confirm) html += '<div class="scrim" id="scrim"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgT"><h5 id="dlgT">' + esc(state.confirm.title) + '</h5><p>' + esc(state.confirm.body) + '</p><div class="row"><button class="btn" id="dlgCancel">Cancel</button><button class="btn primary" id="dlgOk">' + esc(state.confirm.ok) + '</button></div></div></div>';
@@ -609,7 +676,7 @@ function render() {
 }
 function captionFor() {
   const s = { normal: 'Normal week: four submitted entries from three techs.', low: 'Westheimer Dental sits at 2.5 h — low-balance alert fires in Clients and the portal.', exhausted: 'Westheimer Dental has 0.75 h left and 3.0 h submitted. Approving as Drew proves the overdraft rule you picked in Decisions.', qbodown: 'QBO is unreachable: approvals still post to the ledger, records queue with Retry, Billing shows the outage.' }[state.scenario];
-  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen.' : 'As a tech you see your own time, My pay (approved vs. pending, prior deposits) and read-only balances; the calc line shows the rounding rule before you submit.';
+  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen, Receivables shows aging, past-due badges and the automatic reminder schedule.' : 'As a tech you see your own time, My pay (approved vs. pending, prior deposits) and read-only balances; the calc line shows the rounding rule before you submit.';
   return s + ' ' + r;
 }
 
@@ -643,6 +710,8 @@ function wire() {
   if ($('approveAll')) $('approveAll').onclick = approveAll;
   if ($('closeMonth')) $('closeMonth').onclick = closeMonth;
   document.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => buyBlock(state.client, parseInt(b.dataset.buy, 10)));
+  document.querySelectorAll('[data-remind]').forEach(b => b.onclick = () => sendReminder(state.data.invoices.find(i => i.id === b.dataset.remind)));
+  document.querySelectorAll('[data-paid],[data-paynow]').forEach(b => b.onclick = () => markPaid(state.data.invoices.find(i => i.id === (b.dataset.paid || b.dataset.paynow))));
   if ($('dlgCancel')) $('dlgCancel').onclick = () => { state.confirm = null; render(); };
   if ($('dlgOk')) { $('dlgOk').onclick = () => state.confirm.onOk(); $('dlgOk').focus(); }
   if ($('scrim')) $('scrim').onclick = e => { if (e.target.id === 'scrim') { state.confirm = null; render(); } };
