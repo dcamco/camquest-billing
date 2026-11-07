@@ -172,7 +172,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
   <div class="eyebrow"><span>Camquest Systems, LLC · cqsys.com</span><span>·</span><span>Time-block billing &amp; payroll</span><span>·</span><span class="status">For review</span><span>·</span><span>Nov 7, 2026</span></div>
   <h1>One ledger entry does three jobs: burns the client's block, accrues the tech's pay, and queues the QuickBooks Online record.</h1>
   <p class="lede">This is a working slice of the proposed system. Switch who you are (a tech, Drew, or a client) and the scenario above the frame, then use it like the real thing: log time and watch the rounding rules apply, approve the queue and watch balances and pay move, run month-end, or buy a block from the portal.</p>
-  <div class="verdict"><b>Decided so far:</b> QuickBooks Online (Plus + Payroll Core) replaces Desktop before build; hosted on Azure with Entra sign-in; the app's ledger is the source of truth and QBO is the books. <b>Open:</b> what happens when a block runs out, who approves, and whether salaried time burns client blocks. Pick those in <a href="#decisions">Decisions</a>.</div>
+  <div class="verdict"><b>Decided so far:</b> QuickBooks Online (Plus + Payroll Core) replaces Desktop before build; hosted on Azure with Entra sign-in; the app's ledger is the source of truth and QBO is the books. RMM is N-able N-sight, synced nightly into the device picker, portal health panel and RMM invoice counts; backup is native Azure (not Cove). <b>Open:</b> what happens when a block runs out, who approves, RMM fee structure, and whether salaried time burns client blocks. Pick those in <a href="#decisions">Decisions</a>.</div>
 
   <nav class="pillnav" aria-label="Sections">
     <a href="#try">1 · Try it</a>
@@ -252,6 +252,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
       <tr><td>Month-end recognition</td><td><code>JournalEntry</code></td><td>Dr Unearned Revenue / Cr Service Revenue per client, hours × block rate.</td></tr>
       <tr><td>Monthly invoice</td><td><code>Invoice</code></td><td>Lines: T&amp;M hours, Azure Backup (per GB), Hardware, Enable RMM (quarterly, by client flag).</td></tr>
       <tr><td>Payroll</td><td>QBO Payroll (UI)</td><td>Not writable via API. Hours arrive as TimeActivity; Drew approves the run; direct deposit as today.</td></tr>
+      <tr><td>Nightly RMM sync</td><td>N-sight Data Extraction API → app</td><td><code>list_clients</code>, <code>list_devices_at_client</code>, <code>list_failing_checks</code>, patch status. XML, API key, 60 calls/min, so it runs on a schedule. Feeds the device picker, portal health panel, RMM invoice counts and alert→time-entry nudges.</td></tr>
       <tr><td>Invoice due / past due</td><td><code>Invoice.DueDate</code>, <code>Balance</code> + payment webhook</td><td>App polls open invoices hourly and gets webhooks on payment; due state drives portal banners and the reminder schedule. Reminders are sent by the app (branded, portal link) rather than QBO's built-in reminders so wording, cadence and policy are yours.</td></tr>
       <tr><td>Anything fails</td><td><code>SyncLog</code> + retry</td><td>Entries stay <i>Approved</i> (not <i>Synced</i>) and retry every 15 min; red banner in Billing until clear.</td></tr>
     </tbody>
@@ -278,6 +279,14 @@ const CLIENTS = [
   { id: 'heights',name: 'Heights Family Law',     tm: 180, rmm: false, gb: 220, contact: 'Maria S.' }
 ];
 const BLOCK_PRICE = { 20: 160, 40: 140 };
+const RMM_SYNC = '2026-11-07 06:00';
+const DEVICES = {
+  bayou:   [['BAYOU-DC01','server','ok',98],['BAYOU-FS01','server','ok',95],['BT-FRONT1','workstation','ok',100],['BT-FRONT2','workstation','ok',100],['BT-CLOSER1','workstation','failed',71,'Disk space < 10%'],['BT-CLOSER2','workstation','ok',100],['BT-ESCROW','workstation','ok',94],['BT-LAPTOP-JR','workstation','ok',100]],
+  west:    [['WD-SERVER','server','ok',100],['WD-FRONTDESK','workstation','ok',100],['WD-OP1','workstation','ok',100],['WD-OP2','workstation','ok',88],['WD-XRAY','workstation','ok',100]],
+  gulf:    [['GULF-DC01','server','failed',100,'Backup check failed 06:12'],['GULF-APP01','server','ok',97],['GULF-SQL01','server','ok',97],['GL-DISPATCH1','workstation','ok',100],['GL-DISPATCH2','workstation','ok',100],['GL-DISPATCH3','workstation','ok',93],['GL-ACCT1','workstation','ok',100],['GL-ACCT2','workstation','ok',100],['GL-WH-KIOSK','workstation','ok',100],['GL-WH-SCALE','workstation','ok',80],['GL-LT-TOM','workstation','ok',100],['GL-LT-SALES1','workstation','ok',100],['GL-LT-SALES2','workstation','ok',100],['GL-YARD-CAM','workstation','ok',100]],
+  heights: [['HFL-SERVER','server','ok',100],['HFL-RECEPTION','workstation','ok',100],['HFL-MARIA','workstation','ok',100],['HFL-PARALEGAL','workstation','ok',100],['HFL-CONF','workstation','ok',100],['HFL-LT-PARTNER','workstation','ok',96]]
+};
+function rmmSummary(cid) { const d = DEVICES[cid] || []; const servers = d.filter(x => x[1] === 'server').length; const failed = d.filter(x => x[2] === 'failed'); const patched = d.length ? Math.round(d.reduce((a, x) => a + x[3], 0) / d.length) : 0; return { total: d.length, servers, workstations: d.length - servers, failed, patched }; }
 const LOW_THRESHOLD = 5;
 
 function seed(scenario) {
@@ -292,8 +301,8 @@ function seed(scenario) {
   if (scenario === 'exhausted') { blocks[1].remaining = 0.75; }
   const entries = [
     { id: 1, emp: 'mark',   client: 'bayou', date: '2026-11-03', dur: 1.6, mode: 'remote', note: 'Exchange mailbox migration cleanup', status: 'submitted' },
-    { id: 2, emp: 'rick',   client: 'west',  date: '2026-11-04', dur: 0.4, mode: 'onsite', note: 'Replaced front-desk printer, drivers', status: 'submitted' },
-    { id: 3, emp: 'robert', client: 'gulf',  date: '2026-11-04', dur: 2.1, mode: 'remote', note: 'Azure backup job failures, re-seeded', status: 'submitted' },
+    { id: 2, emp: 'rick',   client: 'west',  date: '2026-11-04', dur: 0.4, mode: 'onsite', note: 'Replaced front-desk printer, drivers', device: 'WD-FRONTDESK', status: 'submitted' },
+    { id: 3, emp: 'robert', client: 'gulf',  date: '2026-11-04', dur: 2.1, mode: 'remote', note: 'Azure backup job failures, re-seeded', device: 'GULF-DC01', status: 'submitted' },
     { id: 4, emp: 'mark',   client: 'west',  date: '2026-11-05', dur: 2.0, mode: 'remote', note: 'Conditional access policy rollout', status: 'submitted' },
     { id: 5, emp: 'rick',   client: 'heights',date:'2026-11-05', dur: 0.25,mode: 'remote', note: 'Password reset, MFA re-enroll', status: 'approved', billed: 0.25, synced: true, block: 'B-1005' },
     { id: 6, emp: 'robert', client: 'bayou', date: '2026-10-29', dur: 3.0, mode: 'onsite', note: 'Switch replacement, VLAN retag', status: 'approved', billed: 3, synced: true, block: 'B-1001' }
@@ -337,7 +346,8 @@ const DECISIONS = [
   { key: 'terms', q: 'Payment terms', opts: [['net30', 'Net 30 (current)'], ['net15', 'Net 15'], ['receipt', 'Due on receipt for blocks, Net 30 for monthly']] },
   { key: 'approver', q: 'Who approves time', opts: [['drew', 'Drew only'], ['drew-mark', 'Drew or Mark'], ['auto', 'Auto-approve, Drew reviews weekly']] },
   { key: 'salaried', q: 'Salaried staff logging billable time', opts: [['burn', 'Burns client block, no pay effect'], ['nolog', 'Salaried staff don’t log time']] },
-  { key: 'storage', q: 'Azure backup GB source', opts: [['api', 'Read from Azure Cost Management API'], ['manual', 'Keyed in monthly']] },
+  { key: 'rmmfee', q: 'RMM fee structure', opts: [['flat', 'Flat per client, device count shown'], ['perdevice', 'Per device (server / workstation rates)'], ['tiered', 'Tiered by device count']], note: 'Device counts come from the N-sight Data Extraction API nightly; the invoice line shows the count either way.' },
+  { key: 'backupsrc', q: 'Azure backup GB source', opts: [['azure', 'Native Azure Backup — Cost Management API'], ['manual', 'Keyed in monthly']], note: 'Not Cove today. If you move backup to Cove later it rides the same N-able sync.' },
   { key: 'hardware', q: 'Hardware pricing', opts: [['markup', 'Fixed markup %'], ['deal', 'Priced per deal']] },
   { key: 'accounting', q: 'Block sale treatment', opts: [['accrual', 'Liability, recognize as burned'], ['cash', 'Revenue at sale (cash basis)']] },
   { key: 'stack', q: 'Stack', opts: [['dotnet', '.NET 8 + Postgres + React'], ['node', 'Node/TS + Postgres + React'], ['claude', 'Whatever is easiest to maintain in Claude Code']] }
@@ -348,7 +358,7 @@ function savePicks(p) { try { localStorage.setItem(PICK_KEY, JSON.stringify(p));
 const state = {
   role: 'mark', scenario: 'normal', view: 'time', client: 'west',
   data: seed('normal'), toast: null, confirm: null, menuOpen: false,
-  form: { client: 'bayou', date: '2026-11-07', dur: '1.5', mode: 'remote', note: '' },
+  form: { client: 'bayou', date: '2026-11-07', dur: '1.5', mode: 'remote', note: '', device: '' }, suggestionDismissed: false,
   picks: loadPicks(), monthClosed: false
 };
 let toastTimer = null;
@@ -400,7 +410,8 @@ function submitEntry() {
   if (!d || d <= 0) { toast('Enter a duration first.'); return; }
   if (!f.date) { toast('Pick the date the work was done.'); return; }
   if (f.date > '2026-11-07') { toast('Date is in the future.'); return; }
-  state.data.entries.unshift({ id: state.data.nextId++, emp: state.role, client: f.client, date: f.date || '2026-11-07', dur: d, mode: f.mode, note: f.note || '(no notes)', status: 'submitted' });
+  state.data.entries.unshift({ id: state.data.nextId++, emp: state.role, client: f.client, date: f.date || '2026-11-07', dur: d, mode: f.mode, note: f.note || '(no notes)', device: f.device || '', status: 'submitted' });
+  state.suggestionDismissed = true;
   state.form.note = ''; state.form.dur = '1.0';
   toast('Submitted ' + hrs(billedHours(d, f.mode)) + ' to ' + clientOf(f.client).name + '. Awaiting approval.');
 }
@@ -517,18 +528,20 @@ function renderTime() {
   const payLine = emp.type === 'billed' ? ' · you earn ' + money(b * emp.rate) + ' on approval' : ' · salaried, no pay effect';
   const cRem = sumRemaining(f.client);
   const warn = cRem < b ? '<div class="banner warn"><svg class="i"><use href="#i-warn"/></svg><span>' + esc(clientOf(f.client).name) + ' has only ' + hrs(cRem) + ' left. Entry still submits; Drew sees the shortfall in Approvals.</span></div>' : '';
-  return '<h4>My time</h4><p class="sub">' + esc(emp.name) + (emp.type === 'billed' ? ' · $' + emp.rate + '/h on approved billable time' : ' · salaried') + ' · week of Nov 2</p>' +
+  const suggestion = !state.suggestionDismissed && !state.data.entries.some(e => e.emp === me && e.device === 'GULF-DC01' && e.date === TODAY) ? '<div class="banner info"><svg class="i"><use href="#i-sync"/></svg><span><b>From RMM:</b> GULF-DC01 (Gulf Coast Logistics) backup check failed 06:12 and cleared 08:40 today. Was that you? <button class="btn ghost" id="useSuggestion" style="padding:1px 8px">Log time for it</button> <button class="btn ghost" id="dismissSuggestion" style="padding:1px 8px">Not me</button></span></div>' : '';
+  return '<h4>My time</h4><p class="sub">' + esc(emp.name) + (emp.type === 'billed' ? ' · $' + emp.rate + '/h on approved billable time' : ' · salaried') + ' · week of Nov 2</p>' + suggestion +
     '<div class="form">' +
     '<div class="f"><label for="fClient">Client</label><select id="fClient">' + CLIENTS.map(c => '<option value="' + c.id + '"' + (c.id === f.client ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</select></div>' +
     '<div class="f"><label for="fDate">Date of work</label><input id="fDate" type="date" value="' + esc(f.date) + '" max="2026-11-07"></div>' +
     '<div class="f"><label for="fDur">Time spent (hours)</label><input id="fDur" type="number" step="0.05" min="0" value="' + esc(f.dur) + '"></div>' +
     '<div class="f"><label>Where</label><div class="seg"><button id="mRemote" aria-pressed="' + (f.mode === 'remote') + '">Remote</button><button id="mOnsite" aria-pressed="' + (f.mode === 'onsite') + '">On-site</button></div></div>' +
+    '<div class="f"><label for="fDevice">Device (from RMM)</label><select id="fDevice"><option value="">— general / none —</option>' + (DEVICES[f.client] || []).map(dv => '<option value="' + esc(dv[0]) + '"' + (dv[0] === f.device ? ' selected' : '') + '>' + esc(dv[0]) + (dv[2] === 'failed' ? ' ⚠' : '') + '</option>').join('') + '</select></div>' +
     '<div class="f wide"><label for="fNote">What you did (client sees this)</label><input id="fNote" value="' + esc(f.note) + '" placeholder="e.g. Rebuilt backup job, verified restore"></div>' +
     '<div class="f wide"><div class="calc">billed = ' + b.toFixed(2) + ' h  (' + esc(why) + ')' + esc(payLine) + '</div></div>' +
     '<div class="f"><button class="btn primary" id="submitEntry"><svg class="i"><use href="#i-check"/></svg> Submit</button></div>' +
     '</div>' + warn +
     (mine.length ? '<table><thead><tr><th>Date</th><th>Client</th><th class="hide-sm">Notes</th><th class="num">Spent</th><th class="num">Billed</th><th>Status</th></tr></thead><tbody>' +
-      mine.map(e => '<tr><td>' + esc(e.date) + '</td><td>' + esc(clientOf(e.client).name) + '<div class="mini">' + (e.mode === 'onsite' ? 'On-site' : 'Remote') + '</div></td><td class="hide-sm">' + esc(e.note) + '</td><td class="num">' + e.dur.toFixed(2) + '</td><td class="num">' + billedHours(e.dur, e.mode).toFixed(2) + '</td><td>' + statusTag(e) + '</td></tr>').join('') +
+      mine.map(e => '<tr><td>' + esc(e.date) + '</td><td>' + esc(clientOf(e.client).name) + '<div class="mini">' + (e.mode === 'onsite' ? 'On-site' : 'Remote') + (e.device ? ' · ' + esc(e.device) : '') + '</div></td><td class="hide-sm">' + esc(e.note) + '</td><td class="num">' + e.dur.toFixed(2) + '</td><td class="num">' + billedHours(e.dur, e.mode).toFixed(2) + '</td><td>' + statusTag(e) + '</td></tr>').join('') +
       '</tbody></table>' : '<div class="empty">No entries yet this week. Log your first one above.</div>');
 }
 function statusTag(e) {
@@ -557,7 +570,7 @@ function renderClients() {
       const cls = rem <= 0 ? 'out' : rem < LOW_THRESHOLD ? 'low' : '';
       return '<div class="card"><h5>' + esc(c.name) + '</h5><div class="kpi">' + rem.toFixed(2) + '<small>h remaining of ' + tot + '</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
         bl.map(b => '<div class="mini">' + esc(b.id) + ' · ' + b.hours + 'h @ $' + b.rate + ' · bought ' + esc(b.bought) + ' · <b class="' + (b.remaining < 0 ? 'neg' : '') + '">' + b.remaining.toFixed(2) + ' left</b></div>').join('') +
-        '<div class="mini" style="margin-top:6px">T&amp;M $' + c.tm + '/h · Azure backup ' + c.gb + ' GB · RMM ' + (c.rmm ? 'quarterly' : 'no') + '</div>' +
+        (function () { const r = rmmSummary(c.id); return '<div class="mini" style="margin-top:6px">T&amp;M $' + c.tm + '/h · Azure backup ' + c.gb + ' GB · RMM ' + (c.rmm ? 'quarterly, ' + r.total + ' devices' : r.total + ' devices, not billed') + (r.failed.length ? ' · <b class="neg">' + r.failed.length + ' failing check' + (r.failed.length === 1 ? '' : 's') + '</b>' : '') + '</div>'; })() +
         (function () { const ar = arFor(c.id); return ar.past.length ? '<div class="banner bad" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span><b>Past due ' + money(ar.pastAmt) + '</b> · ' + ar.maxDays + ' days · ' + ar.past.length + ' invoice' + (ar.past.length === 1 ? '' : 's') + '</span></div>' : ar.open.length ? '<div class="mini">Open: ' + money(ar.openAmt) + ', next due ' + esc(ar.open.slice().sort((a, b) => a.due.localeCompare(b.due))[0].due) + '</div>' : '<div class="mini pos">All invoices paid</div>'; })() +
         (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Exhausted. ' : 'Low. ') + 'Low-balance email sent to ' + esc(c.contact) + ' with 20/40 block offer.</span></div>' : '') +
         '</div>'; }).join('') + '</div>';
@@ -572,7 +585,7 @@ function renderBilling() {
     const tm = state.data.entries.filter(e => e.client === c.id && e.tm).reduce((a, e) => a + e.tm, 0);
     const lines = [['Azure Backup — ' + c.gb + ' GB @ $0.12', c.gb * 0.12]];
     if (tm) lines.push(['Support — T&M ' + tm.toFixed(2) + ' h @ $' + c.tm, tm * c.tm]);
-    if (c.rmm) lines.push(['Enable RMM — Q4 2026', 450]);
+    if (c.rmm) { const r = rmmSummary(c.id); lines.push(['N-able RMM — Q4 2026 · ' + r.total + ' devices (' + r.servers + ' srv / ' + r.workstations + ' ws) per N-sight ' + RMM_SYNC, 450]); }
     if (c.id === 'gulf') lines.push(['Hardware — UniFi switch (24 PoE)', 689]);
     return { c, lines, total: lines.reduce((a, l) => a + l[1], 0) };
   });
@@ -580,6 +593,7 @@ function renderBilling() {
     (down ? '<div class="banner bad"><svg class="i"><use href="#i-warn"/></svg><span><b>QuickBooks Online unreachable since 15:40.</b> ' + retry + ' record' + (retry === 1 ? '' : 's') + ' queued; retrying every 15 min. Approvals and balances keep working; nothing is lost.</span></div>' : (retry ? '<div class="banner warn"><svg class="i"><use href="#i-warn"/></svg><span>' + retry + ' record(s) still retrying from an earlier outage.</span></div>' : '<div class="banner ok"><svg class="i"><use href="#i-check"/></svg><span>QBO connected · last sync just now · app and QBO agree.</span></div>')) +
     '<div class="grid2"><div class="card"><h5>Block liability (Unearned Revenue)</h5><div class="kpi">' + money(liability) + '</div><div class="mini">Σ remaining hours × block rate. Must equal QBO account 2300 after month-end JE.</div></div>' +
     '<div class="card"><h5>Pay accrued this period</h5><div class="kpi">' + money(accrual) + '</div><div class="mini">' + Object.keys(state.data.accrual).map(k => esc(EMP[k].name) + ' ' + money(state.data.accrual[k])).join(' · ') + '. Flows to QBO Payroll as TimeActivity hours × employee rate.</div></div></div>' +
+    '<div class="banner info" style="margin-top:14px"><svg class="i"><use href="#i-sync"/></svg><span><b>N-sight sync ' + RMM_SYNC + ':</b> ' + CLIENTS.reduce((a, c) => a + rmmSummary(c.id).total, 0) + ' devices across ' + CLIENTS.length + ' clients · ' + CLIENTS.filter(c => !c.rmm && rmmSummary(c.id).total).map(c => esc(c.name)).join(', ') + ' have monitored devices but no RMM line — check.</span></div>' +
     '<h3 style="margin-top:18px">October close</h3>' +
     '<table><thead><tr><th>Client</th><th>Invoice lines (non-block)</th><th class="num">Invoice</th></tr></thead><tbody>' +
     octLines.map(o => '<tr><td>' + esc(o.c.name) + '</td><td>' + o.lines.map(l => esc(l[0]) + ' — ' + money(l[1])).join('<br>') + '</td><td class="num">' + money(o.total) + '</td></tr>').join('') +
@@ -601,8 +615,9 @@ function renderPortal() {
     '<div class="grid2"><div class="card"><h5>Hours remaining</h5><div class="kpi">' + rem.toFixed(2) + '<small>of ' + tot + ' purchased</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
     bl.map(b => '<div class="mini">' + b.hours + '-hour block · $' + b.rate + '/h · ' + b.remaining.toFixed(2) + ' left</div>').join('') + '</div>' +
     '<div class="card"><h5>Buy another block</h5>' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? '<div class="mini neg" style="margin-top:6px">Unavailable while an invoice is past due.</div>' : '') + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn"' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? ' disabled' : '') + ' data-buy="20">20 h · $3,200 <span class="mini">($160/h)</span></button><button class="btn primary"' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? ' disabled' : '') + ' data-buy="40">40 h · $5,600 <span class="mini">($140/h)</span></button></div><div class="mini" style="margin-top:8px">You’ll get a QuickBooks invoice with a pay-online link. Hours unlock when payment posts.</div></div></div>' +
+    (function () { const r = rmmSummary(c.id); return '<div class="card" style="margin-top:16px"><h5>Your systems · monitored by Camquest RMM</h5><div style="display:flex;gap:22px;flex-wrap:wrap;align-items:baseline"><div><div class="kpi">' + r.total + '<small>devices</small></div><div class="mini">' + r.servers + ' server' + (r.servers === 1 ? '' : 's') + ', ' + r.workstations + ' workstations</div></div><div><div class="kpi" style="color:' + (r.failed.length ? 'var(--bad)' : 'var(--ok)') + '">' + (r.total - r.failed.length) + '<small>healthy</small></div><div class="mini">' + (r.failed.length ? r.failed.map(x => esc(x[0]) + ': ' + esc(x[4])).join('; ') : 'no failing checks') + '</div></div><div><div class="kpi">' + r.patched + '%<small>patched</small></div><div class="mini">Windows &amp; third-party</div></div></div><div class="mini" style="margin-top:6px">Synced from N-able N-sight ' + RMM_SYNC + '</div></div>'; })() +
     '<h3 style="margin-top:18px">Recent work</h3>' +
-    (ent.length ? '<table><thead><tr><th>Date</th><th>Tech</th><th>What was done</th><th class="num">Hours</th></tr></thead><tbody>' + ent.map(e => '<tr><td>' + esc(e.date) + '</td><td>' + esc(EMP[e.emp].name) + '</td><td>' + esc(e.note) + (e.tm ? ' <span class="tag tm">' + e.tm.toFixed(2) + 'h T&amp;M</span>' : '') + '</td><td class="num">' + (e.billed || 0).toFixed(2) + '</td></tr>').join('') + '</tbody></table>' : '<div class="empty">No approved work yet this period.</div>') +
+    (ent.length ? '<table><thead><tr><th>Date</th><th>Tech</th><th>What was done</th><th class="num">Hours</th></tr></thead><tbody>' + ent.map(e => '<tr><td>' + esc(e.date) + '</td><td>' + esc(EMP[e.emp].name) + '</td><td>' + (e.device ? '<span class="mini">' + esc(e.device) + ' · </span>' : '') + esc(e.note) + (e.tm ? ' <span class="tag tm">' + e.tm.toFixed(2) + 'h T&amp;M</span>' : '') + '</td><td class="num">' + (e.billed || 0).toFixed(2) + '</td></tr>').join('') + '</tbody></table>' : '<div class="empty">No approved work yet this period.</div>') +
     '<h3 style="margin-top:18px">Invoices</h3><table><thead><tr><th>Invoice</th><th class="hide-sm">For</th><th>Due</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>' +
     state.data.invoices.filter(i => i.client === c.id).sort((a, b) => (a.paid ? 1 : 0) - (b.paid ? 1 : 0) || a.due.localeCompare(b.due)).map(i => { const st = invStatus(i); return '<tr' + (st.key === 'past' ? ' style="background:var(--bad-soft)"' : '') + '><td>' + esc(i.id) + '<div class="mini">' + esc(i.issued) + '</div></td><td class="hide-sm mini">' + esc(i.desc) + '</td><td>' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span>' + (i.paid ? '' : ' <button class="btn ghost" style="padding:2px 8px" data-paynow="' + esc(i.id) + '">Pay</button>') + '</td></tr>'; }).join('') + '</tbody></table>';
 }
@@ -676,7 +691,7 @@ function render() {
 }
 function captionFor() {
   const s = { normal: 'Normal week: four submitted entries from three techs.', low: 'Westheimer Dental sits at 2.5 h — low-balance alert fires in Clients and the portal.', exhausted: 'Westheimer Dental has 0.75 h left and 3.0 h submitted. Approving as Drew proves the overdraft rule you picked in Decisions.', qbodown: 'QBO is unreachable: approvals still post to the ledger, records queue with Retry, Billing shows the outage.' }[state.scenario];
-  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen, Receivables shows aging, past-due badges and the automatic reminder schedule.' : 'As a tech you see your own time, My pay (approved vs. pending, prior deposits) and read-only balances; the calc line shows the rounding rule before you submit.';
+  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen, Receivables shows aging, past-due badges and the automatic reminder schedule.' : 'As a tech you see your own time, My pay and read-only balances; the RMM banner offers to log time for a check that failed and cleared, and the device picker comes from N-sight.';
   return s + ' ' + r;
 }
 
@@ -700,7 +715,10 @@ function wire() {
   if ($('whoBtn')) $('whoBtn').onclick = () => { state.menuOpen = !state.menuOpen; render(); };
   if ($('menuOut')) $('menuOut').onclick = () => { state.menuOpen = false; toast('Signed out. (Pick a role above to sign back in.)'); };
   if ($('menuSwitch')) $('menuSwitch').onclick = () => { state.menuOpen = false; render(); document.getElementById('roleSeg').querySelector('button').focus(); };
-  if ($('fClient')) { $('fClient').onchange = e => { state.form.client = e.target.value; render(); }; }
+  if ($('fClient')) { $('fClient').onchange = e => { state.form.client = e.target.value; state.form.device = ''; render(); }; }
+  if ($('fDevice')) { $('fDevice').onchange = e => { state.form.device = e.target.value; }; }
+  if ($('useSuggestion')) $('useSuggestion').onclick = () => { state.form = { client: 'gulf', date: '2026-11-07', dur: '1.25', mode: 'remote', note: 'Backup check failed on GULF-DC01 — re-seeded job, verified restore point', device: 'GULF-DC01' }; render(); const n = document.getElementById('fNote'); if (n) n.focus(); };
+  if ($('dismissSuggestion')) $('dismissSuggestion').onclick = () => { state.suggestionDismissed = true; render(); };
   if ($('fDur')) { $('fDur').oninput = e => { state.form.dur = e.target.value; const el = document.querySelector('.calc'); if (el) { render(); const d2 = document.getElementById('fDur'); d2.focus(); d2.setSelectionRange && d2.value.length && d2.setSelectionRange(d2.value.length, d2.value.length); } }; }
   if ($('fDate')) { $('fDate').onchange = e => { state.form.date = e.target.value; }; }
   if ($('fNote')) { $('fNote').oninput = e => { state.form.note = e.target.value; }; }
