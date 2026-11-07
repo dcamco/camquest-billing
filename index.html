@@ -323,7 +323,7 @@ function savePicks(p) { try { localStorage.setItem(PICK_KEY, JSON.stringify(p));
 const state = {
   role: 'mark', scenario: 'normal', view: 'time', client: 'west',
   data: seed('normal'), toast: null, confirm: null, menuOpen: false,
-  form: { client: 'bayou', dur: '1.5', mode: 'remote', note: '' },
+  form: { client: 'bayou', date: '2026-11-07', dur: '1.5', mode: 'remote', note: '' },
   picks: loadPicks(), monthClosed: false
 };
 let toastTimer = null;
@@ -352,7 +352,9 @@ function submitEntry() {
   const f = state.form;
   const d = parseFloat(f.dur);
   if (!d || d <= 0) { toast('Enter a duration first.'); return; }
-  state.data.entries.unshift({ id: state.data.nextId++, emp: state.role, client: f.client, date: '2026-11-07', dur: d, mode: f.mode, note: f.note || '(no notes)', status: 'submitted' });
+  if (!f.date) { toast('Pick the date the work was done.'); return; }
+  if (f.date > '2026-11-07') { toast('Date is in the future.'); return; }
+  state.data.entries.unshift({ id: state.data.nextId++, emp: state.role, client: f.client, date: f.date || '2026-11-07', dur: d, mode: f.mode, note: f.note || '(no notes)', status: 'submitted' });
   state.form.note = ''; state.form.dur = '1.0';
   toast('Submitted ' + hrs(billedHours(d, f.mode)) + ' to ' + clientOf(f.client).name + '. Awaiting approval.');
 }
@@ -450,6 +452,7 @@ function closeMonth() {
 function viewsFor() {
   if (state.role === 'client') return [['portal', 'My account', 'i-globe']];
   const v = [['time', 'My time', 'i-clock']];
+  if (EMP[state.role].type === 'billed') v.push(['pay', 'My pay', 'i-doc']);
   if (isAdmin()) v.push(['approvals', 'Approvals', 'i-check']);
   v.push(['clients', 'Clients', 'i-users']);
   if (isAdmin()) v.push(['billing', 'Billing & QBO', 'i-doc'], ['portal', 'Portal preview', 'i-globe']);
@@ -470,6 +473,7 @@ function renderTime() {
   return '<h4>My time</h4><p class="sub">' + esc(emp.name) + (emp.type === 'billed' ? ' · $' + emp.rate + '/h on approved billable time' : ' · salaried') + ' · week of Nov 2</p>' +
     '<div class="form">' +
     '<div class="f"><label for="fClient">Client</label><select id="fClient">' + CLIENTS.map(c => '<option value="' + c.id + '"' + (c.id === f.client ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</select></div>' +
+    '<div class="f"><label for="fDate">Date of work</label><input id="fDate" type="date" value="' + esc(f.date) + '" max="2026-11-07"></div>' +
     '<div class="f"><label for="fDur">Time spent (hours)</label><input id="fDur" type="number" step="0.05" min="0" value="' + esc(f.dur) + '"></div>' +
     '<div class="f"><label>Where</label><div class="seg"><button id="mRemote" aria-pressed="' + (f.mode === 'remote') + '">Remote</button><button id="mOnsite" aria-pressed="' + (f.mode === 'onsite') + '">On-site</button></div></div>' +
     '<div class="f wide"><label for="fNote">What you did (client sees this)</label><input id="fNote" value="' + esc(f.note) + '" placeholder="e.g. Rebuilt backup job, verified restore"></div>' +
@@ -553,13 +557,36 @@ function renderPortal() {
     bl.map(b => '<tr><td>' + esc(b.id.replace('B-', 'INV-')) + ' · ' + esc(b.bought) + '</td><td>Prepaid Support Block ' + b.hours + '</td><td class="num">' + money(b.hours * b.rate) + '</td><td><span class="tag approved">Paid</span></td></tr>').join('') + '</tbody></table>';
 }
 
+function renderPay() {
+  const me = state.role, emp = EMP[me];
+  const mine = state.data.entries.filter(e => e.emp === me);
+  const approved = mine.filter(e => e.status === 'approved');
+  const pending = mine.filter(e => e.status === 'submitted' || e.status === 'held');
+  const earned = approved.reduce((a, e) => a + (e.billed || 0) * emp.rate, 0);
+  const pendingPay = pending.reduce((a, e) => a + billedHours(e.dur, e.mode) * emp.rate, 0);
+  const hoursApproved = approved.reduce((a, e) => a + (e.billed || 0), 0);
+  const prior = [
+    { period: 'Oct 16 – Oct 31', hours: me === 'mark' ? 31.25 : me === 'rick' ? 22.5 : 27.75, paid: '2026-11-05' },
+    { period: 'Oct 1 – Oct 15',  hours: me === 'mark' ? 28.0 : me === 'rick' ? 19.75 : 30.5, paid: '2026-10-20' }
+  ];
+  return '<h4>My pay</h4><p class="sub">' + esc(emp.name) + ' · $' + emp.rate + '/h on approved billable time ($' + (emp.rate / 4).toFixed(2) + ' per quarter hour) · pay period Nov 1 – Nov 15, direct deposit Nov 20</p>' +
+    '<div class="grid2"><div class="card"><h5>Earned this period (approved)</h5><div class="kpi">' + money(earned) + '<small>' + hrs(hoursApproved) + '</small></div><div class="mini">Only approved entries count. This is what flows to QuickBooks Payroll.</div></div>' +
+    '<div class="card"><h5>Awaiting approval</h5><div class="kpi" style="color:var(--muted)">' + money(pendingPay) + '<small>' + pending.length + ' entr' + (pending.length === 1 ? 'y' : 'ies') + '</small></div><div class="mini">' + (pending.some(e => e.status === 'held') ? 'One or more entries are held pending a client block sale.' : 'Drew approves weekly, usually Friday.') + '</div></div></div>' +
+    '<h3 style="margin-top:18px">This period by entry</h3>' +
+    (mine.length ? '<table><thead><tr><th>Date</th><th>Client</th><th class="num">Billed</th><th class="num">Pay</th><th>Status</th></tr></thead><tbody>' +
+      mine.slice().sort((a, b) => b.date.localeCompare(a.date)).map(e => { const b = e.billed || billedHours(e.dur, e.mode); return '<tr><td>' + esc(e.date) + '</td><td>' + esc(clientOf(e.client).name) + '</td><td class="num">' + b.toFixed(2) + '</td><td class="num' + (e.status === 'approved' ? '' : ' mini') + '">' + money(b * emp.rate) + '</td><td>' + statusTag(e) + '</td></tr>'; }).join('') + '</tbody></table>' : '<div class="empty">Nothing logged this period yet.</div>') +
+    '<h3 style="margin-top:18px">Prior periods</h3><table><thead><tr><th>Period</th><th class="num">Billed hrs</th><th class="num">Gross</th><th>Paid</th></tr></thead><tbody>' +
+    prior.map(p => '<tr><td>' + esc(p.period) + '</td><td class="num">' + p.hours.toFixed(2) + '</td><td class="num">' + money(p.hours * emp.rate) + '</td><td><span class="tag approved">Deposited ' + esc(p.paid) + '</span></td></tr>').join('') + '</tbody></table>' +
+    '<div class="mini" style="margin-top:10px">Gross before taxes and withholding; your pay stub in QuickBooks Workforce has the net.</div>';
+}
+
 /* ---------- frame ---------- */
 function render() {
   const views = viewsFor();
   if (!views.some(v => v[0] === state.view)) state.view = views[0][0];
   const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Admin' : ' · Tech');
   const pendingCount = state.data.entries.filter(e => e.status === 'submitted' || e.status === 'held').length;
-  const content = { time: renderTime, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
+  const content = { time: renderTime, pay: renderPay, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
   let html = '<div class="topbar"><span class="logo">cam<span>quest</span></span><span class="mini" style="color:#9c9a94">' + (state.role === 'client' ? 'Client portal' : 'Time &amp; Billing') + '</span><span class="spacer"></span>' +
     '<span class="who"><button id="whoBtn" aria-haspopup="menu" aria-expanded="' + state.menuOpen + '">' + esc(who) + ' ▾</button>' +
     (state.menuOpen ? '<div class="menu" role="menu"><button role="menuitem" id="menuSwitch">Switch role (use control above)</button><button role="menuitem" id="menuOut">Sign out</button></div>' : '') + '</span></div>' +
@@ -580,7 +607,7 @@ function render() {
 }
 function captionFor() {
   const s = { normal: 'Normal week: four submitted entries from three techs.', low: 'Westheimer Dental sits at 2.5 h — low-balance alert fires in Clients and the portal.', exhausted: 'Westheimer Dental has 0.75 h left and 3.0 h submitted. Approving as Drew proves the overdraft rule you picked in Decisions.', qbodown: 'QBO is unreachable: approvals still post to the ledger, records queue with Retry, Billing shows the outage.' }[state.scenario];
-  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen.' : 'As a tech you see your own time and read-only balances; the calc line shows the rounding rule before you submit.';
+  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen.' : 'As a tech you see your own time, My pay (approved vs. pending, prior deposits) and read-only balances; the calc line shows the rounding rule before you submit.';
   return s + ' ' + r;
 }
 
@@ -606,6 +633,7 @@ function wire() {
   if ($('menuSwitch')) $('menuSwitch').onclick = () => { state.menuOpen = false; render(); document.getElementById('roleSeg').querySelector('button').focus(); };
   if ($('fClient')) { $('fClient').onchange = e => { state.form.client = e.target.value; render(); }; }
   if ($('fDur')) { $('fDur').oninput = e => { state.form.dur = e.target.value; const el = document.querySelector('.calc'); if (el) { render(); const d2 = document.getElementById('fDur'); d2.focus(); d2.setSelectionRange && d2.value.length && d2.setSelectionRange(d2.value.length, d2.value.length); } }; }
+  if ($('fDate')) { $('fDate').onchange = e => { state.form.date = e.target.value; }; }
   if ($('fNote')) { $('fNote').oninput = e => { state.form.note = e.target.value; }; }
   if ($('mRemote')) $('mRemote').onclick = () => { state.form.mode = 'remote'; render(); };
   if ($('mOnsite')) $('mOnsite').onclick = () => { state.form.mode = 'onsite'; render(); };
