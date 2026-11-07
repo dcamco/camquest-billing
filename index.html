@@ -10,7 +10,7 @@
   --bg: #f7f7f5; --panel: #ffffff; --panel-2: #f2f1ee;
   --ink: #1c1c1a; --ink-2: #3b3a36; --muted: #5f5e59;
   --line: #e4e2de; --line-strong: #cfccc6;
-  --accent: #a8521f; --accent-hover: #8f4418; --accent-soft: #f7ebe3;
+  --accent: #b07d14; --accent-hover: #93660d; --accent-soft: #fbf1dc; --gold: #e0a028;
   --ok: #1d7646; --ok-soft: #e2f2e8;
   --warn: #8a5a00; --warn-soft: #fbf0d6;
   --bad: #b3261e; --bad-soft: #fbe8e6;
@@ -56,7 +56,9 @@ svg.i { width: 16px; height: 16px; vertical-align: -3px; }
 .frame { border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: var(--shadow); background: var(--panel); overflow: hidden; margin-top: 10px; position: relative; }
 .topbar { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: #1c1c1a; color: #f2f1ee; }
 .topbar .logo { font-weight: 700; letter-spacing: .02em; }
-.topbar .logo span { color: #e9a67a; }
+.topbar .logo { letter-spacing: .14em; font-size: 13px; }
+.topbar .logo span { color: var(--gold); }
+.topbar .tag-line { font-size: 11px; color: #9c9a94; letter-spacing: .02em; }
 .topbar .spacer { flex: 1; }
 .topbar .who { font-size: 13px; color: #cfccc6; position: relative; }
 .topbar .who button { background: transparent; border: 1px solid #4a4843; color: #f2f1ee; border-radius: 999px; padding: 3px 10px; font: inherit; font-size: 13px; cursor: pointer; }
@@ -119,7 +121,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 14px 0; }
 .step { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 12px; font-size: 13.5px; position: relative; }
 .step > b:first-of-type { display: block; margin-bottom: 4px; }
-.step .n { position: absolute; top: -10px; left: 12px; background: var(--accent); color: #fff; font-size: 11px; border-radius: 999px; padding: 0 7px; }
+.step .n { position: absolute; top: -10px; left: 12px; background: var(--ink); color: #fff; font-size: 11px; border-radius: 999px; padding: 0 7px; }
 .compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
 .decision { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--panel); margin: 10px 0; }
 .decision .q { font-weight: 600; margin-bottom: 8px; }
@@ -167,7 +169,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
 </svg>
 
 <div class="wrap">
-  <div class="eyebrow"><span>Camquest Systems</span><span>·</span><span>Time-block billing &amp; payroll</span><span>·</span><span class="status">For review</span><span>·</span><span>Nov 7, 2026</span></div>
+  <div class="eyebrow"><span>Camquest Systems, LLC · cqsys.com</span><span>·</span><span>Time-block billing &amp; payroll</span><span>·</span><span class="status">For review</span><span>·</span><span>Nov 7, 2026</span></div>
   <h1>One ledger entry does three jobs: burns the client's block, accrues the tech's pay, and queues the QuickBooks Online record.</h1>
   <p class="lede">This is a working slice of the proposed system. Switch who you are (a tech, Drew, or a client) and the scenario above the frame, then use it like the real thing: log time and watch the rounding rules apply, approve the queue and watch balances and pay move, run month-end, or buy a block from the portal.</p>
   <div class="verdict"><b>Decided so far:</b> QuickBooks Online (Plus + Payroll Core) replaces Desktop before build; hosted on Azure with Entra sign-in; the app's ledger is the source of truth and QBO is the books. <b>Open:</b> what happens when a block runs out, who approves, and whether salaried time burns client blocks. Pick those in <a href="#decisions">Decisions</a>.</div>
@@ -254,7 +256,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
     </tbody>
   </table>
 
-  <footer>Nov 7, 2026 · For Drew / Camquest Systems · Employee names and pay rates, block sizes and prices, rounding minimums and the QBO plan are from our planning thread. Client names, hours, storage GB, hardware items and invoice numbers are invented to exercise the screens. Nothing here is connected to QuickBooks.</footer>
+  <footer>Nov 7, 2026 · For Drew / Camquest Systems, LLC (cqsys.com) · Brand gold and wordmark taken from the site logo. Employee names and pay rates, block sizes and prices, rounding minimums and the QBO plan are from our planning thread. Client names, hours, storage GB, hardware items and invoice numbers are invented to exercise the screens. Nothing here is connected to QuickBooks.</footer>
 </div>
 
 <script>
@@ -546,7 +548,7 @@ function renderPortal() {
   const rem = sumRemaining(c.id); const tot = bl.reduce((a, b) => a + b.hours, 0);
   const cls = rem <= 0 ? 'out' : rem < LOW_THRESHOLD ? 'low' : '';
   const ent = state.data.entries.filter(e => e.client === c.id && e.status === 'approved');
-  return '<h4>' + esc(c.name) + '</h4><p class="sub">Welcome back, ' + esc(c.contact) + ' · support by Camquest Systems' + (isAdmin() ? ' · <i>admin preview of what the client sees</i>' : '') + '</p>' +
+  return '<h4>' + esc(c.name) + '</h4><p class="sub">Welcome back, ' + esc(c.contact) + ' · Camquest Systems · (281) 880-6896 · info@cqsys.com' + (isAdmin() ? ' · <i>admin preview of what the client sees</i>' : '') + '</p>' +
     (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Your block is used up. ' : 'You have ' + rem.toFixed(2) + ' hours left. ') + 'Buy a block below to keep your rate; otherwise time bills at $' + c.tm + '/h.</span></div>' : '') +
     '<div class="grid2"><div class="card"><h5>Hours remaining</h5><div class="kpi">' + rem.toFixed(2) + '<small>of ' + tot + ' purchased</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
     bl.map(b => '<div class="mini">' + b.hours + '-hour block · $' + b.rate + '/h · ' + b.remaining.toFixed(2) + ' left</div>').join('') + '</div>' +
@@ -587,7 +589,7 @@ function render() {
   const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Admin' : ' · Tech');
   const pendingCount = state.data.entries.filter(e => e.status === 'submitted' || e.status === 'held').length;
   const content = { time: renderTime, pay: renderPay, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
-  let html = '<div class="topbar"><span class="logo">cam<span>quest</span></span><span class="mini" style="color:#9c9a94">' + (state.role === 'client' ? 'Client portal' : 'Time &amp; Billing') + '</span><span class="spacer"></span>' +
+  let html = '<div class="topbar"><span class="logo">CAM<span>QUEST</span></span><span class="tag-line">' + (state.role === 'client' ? 'Client portal · Your Trusted Technology Advisor' : 'Time &amp; Billing') + '</span><span class="spacer"></span>' +
     '<span class="who"><button id="whoBtn" aria-haspopup="menu" aria-expanded="' + state.menuOpen + '">' + esc(who) + ' ▾</button>' +
     (state.menuOpen ? '<div class="menu" role="menu"><button role="menuitem" id="menuSwitch">Switch role (use control above)</button><button role="menuitem" id="menuOut">Sign out</button></div>' : '') + '</span></div>' +
     '<div class="body"><nav class="sidenav" aria-label="App">' + views.map(v => '<button data-view="' + v[0] + '" aria-current="' + (state.view === v[0] ? 'page' : 'false') + '"><svg class="i"><use href="#' + v[2] + '"/></svg>' + esc(v[1]) + (v[0] === 'approvals' && pendingCount ? '<span class="badge">' + pendingCount + '</span>' : '') + '</button>').join('') + '</nav>' +
