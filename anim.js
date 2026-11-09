@@ -36,7 +36,7 @@ function player(host, steps, renderStep, opts) {
 
 /* ---------- 1. One quarter hour, end to end ---------- */
 function flow(host) {
-  const steps = ['Tech logs time', 'Rounding & minimums', 'Drew approves', 'Three postings at once', 'Month end: revenue recognized'];
+  const steps = ['Tech logs time', 'Rounding & minimums', 'Scott approves', 'Three postings at once', 'Month end: revenue recognized'];
   const node = (cls, title, body, state) => '<div class="cq-node ' + cls + (state ? ' is-' + state : '') + '"><div class="cq-nt">' + title + '</div><div class="cq-nb">' + body + '</div></div>';
   return player(host, steps, k => {
     const entry = k === 0 ? 'Rick · Westheimer Dental<br><b>0.40 h</b> on-site · "replaced front-desk printer"' : 'Rick · Westheimer Dental<br><b>1.00 h</b> billed <span class="cq-dim">(0.40 → 0.50 → on-site min 1.00)</span>';
@@ -47,14 +47,14 @@ function flow(host) {
     return '<div class="cq-flow">' +
       node('a', 'Time entry', entry, k === 0 ? 'active' : k === 1 ? 'active' : 'done') +
       '<div class="cq-arrow' + (k >= 2 ? ' on' : '') + '">→</div>' +
-      node('b', 'Approval', k < 2 ? '<span class="cq-dim">Submitted · waiting for Drew</span>' : '<b>Approved</b> by Drew ✓', k === 2 ? 'active' : k > 2 ? 'done' : '') +
+      node('b', 'Approval', k < 2 ? '<span class="cq-dim">Submitted · waiting for Scott</span>' : '<b>Approved</b> by Scott ✓', k === 2 ? 'active' : k > 2 ? 'done' : '') +
       '<div class="cq-fan' + (k >= 3 ? ' on' : '') + '"><span>→</span><span>→</span><span>→</span></div>' +
       '<div class="cq-col">' +
         node('c', 'Client block', block + '<div class="cq-track"><div style="width:' + barW + '%"></div></div>', k === 3 ? 'active' : k > 3 ? 'done' : '') +
         node('d', 'Tech pay accrual', pay, k === 3 ? 'active' : k > 3 ? 'done' : '') +
         node('e', 'QuickBooks Online', qbo, k >= 3 ? 'active' : '') +
       '</div></div>' +
-      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval does three things at once: the client’s block drops 1.00 h, Rick earns $50, and the hours go to QuickBooks for payroll.', 'At month end the app tells QuickBooks that 1.00 h × $160 of prepaid money has now been earned — the entry Tami used to make by hand.'][k] + '</p>';
+      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Scott reviews the queue once a week and approves.', 'One approval does three things at once: the client’s block drops 1.00 h, Rick earns $50, and the hours go to QuickBooks for payroll.', 'At month end the app tells QuickBooks that 1.00 h × $160 of prepaid money has now been earned — the entry Tami used to make by hand.'][k] + '</p>';
   }, { interval: 2200 });
 }
 
@@ -85,8 +85,8 @@ function sync(host) {
       src('Azure', 'Backup GB per client', k === 1, k > 1) +
       src('QuickBooks Online', 'Open invoices · payments posted', k === 2, k > 2) +
       '</div><div class="cq-core' + (k >= 3 ? ' on' : '') + '"><div class="cq-nt">Camquest ledger</div><div class="cq-nb">' + (k < 3 ? 'receiving…' : k === 3 ? 'reconciling' : 'reconciled · suggestions drafted') + '</div>' + checks + '</div>' +
-      '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Drew’s Monday digest</div></div></div>' +
-      '<p class="cq-cap">' + ['Every night the app pulls the device list and any failing checks from N-sight — read-only, at the pace N-able allows.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
+      '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Scott’s Monday digest</div></div></div>' +
+      '<p class="cq-cap">' + ['Every night the app pulls the device list and any failing checks from N-sight — read-only, at the pace N-able allows.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Scott gets one digest instead of four logins.'][k] + '</p>';
   }, { interval: 2000 });
 }
 

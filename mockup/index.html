@@ -217,7 +217,8 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
         <button data-role="mark">Mark (tech)</button>
         <button data-role="rick">Rick (tech)</button>
         <button data-role="robert">Robert (tech)</button>
-        <button data-role="drew">Owner console (Drew)</button>
+        <button data-role="zach">Zach (salaried)</button>
+        <button data-role="scott">Scott (owner)</button>
         <button data-role="client">Client contact</button>
       </div>
     </div>
@@ -252,7 +253,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
     <div class="step"><span class="n">2</span><b>Tech logs time</b>Duration rounds up to .25. On-site floors at 1.0 hr, remote at .25. Entry sits as <i>Submitted</i> until approved.</div>
     <div class="step"><span class="n">3</span><b>Approve</b>Oldest block debited at its locked rate. Tech accrues billed hrs × their rate (Mark 85, Rick 50, Robert 60). One <code>TimeActivity</code> queued to QBO.</div>
     <div class="step"><span class="n">4</span><b>Month end</b>Per client: hours consumed × block rate moves Unearned Revenue → Service Revenue (journal entry). T&amp;M hours, Azure backup GB, hardware and quarterly RMM go on one Invoice.</div>
-    <div class="step"><span class="n">5</span><b>Payroll</b>Pay-period hours already sit in QBO as <code>TimeActivity</code>. Rate lives on the QBO Employee. Drew clicks Run Payroll; direct deposit unchanged.</div>
+    <div class="step"><span class="n">5</span><b>Payroll</b>Pay-period hours already sit in QBO as <code>TimeActivity</code>. Rate lives on the QBO Employee. Scott clicks Run Payroll; direct deposit unchanged.</div>
     <div class="step"><span class="n">6</span><b>Reconcile</b>Block liability in app vs. Unearned Revenue in QBO; pay accrual vs. payroll run. Both match or the dashboard goes red. This is what lets the bookkeeper retire.</div>
   </div>
   <h3>Core tables</h3>
@@ -261,7 +262,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
 
   <h2 id="alternatives">3 · Alternatives considered</h2>
   <div class="compare">
-    <div class="card"><h5>Custom app (this mockup)</h5><p style="font-size:14px">Exactly Camquest’s rules, portal and QuickBooks mapping. Azure hosting on the order of $100/month. Camquest owns the code; Drew builds and maintains it, with a runbook so anyone can take it over.</p></div>
+    <div class="card"><h5>Custom app (this mockup)</h5><p style="font-size:14px">Exactly Camquest’s rules, portal and QuickBooks mapping. Azure hosting on the order of $100/month. Camquest owns the code; Drew builds it as an outside developer and hands over a runbook so anyone can maintain it.</p></div>
     <div class="card"><h5>MSP PSA tool with QBO sync</h5><p style="font-size:14px">Several PSAs do prepaid-hour blocks, ticketing and QBO sync out of the box, per-tech per month. Faster start; you'd bend your pay-per-quarter-hour rule and portal to their model, and per-client block rates are often awkward.</p></div>
     <div class="card"><h5>QBO alone + spreadsheets</h5><p style="font-size:14px">QBO can track retainers and timesheets natively. No portal, no automatic rounding/minimums, no pay accrual, and someone still keys the deductions. This is roughly what the bookkeeper does today.</p></div>
     <div class="card"><h5>Stay on QB Desktop</h5><p style="font-size:14px">Integration via the QBXML SDK / Web Connector: Windows-only, polling, breaks on upgrades. Not recommended if the Online move is happening anyway.</p></div>
@@ -285,7 +286,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
       <tr><td>Time approved</td><td><code>TimeActivity</code></td><td>Employee, Customer, hours, service item <i>Support — Block</i> or <i>Support — T&amp;M</i>. Feeds payroll hours.</td></tr>
       <tr><td>Month-end recognition</td><td><code>JournalEntry</code></td><td>Dr Unearned Revenue / Cr Service Revenue per client, hours × block rate.</td></tr>
       <tr><td>Monthly invoice</td><td><code>Invoice</code></td><td>Lines: T&amp;M hours, Azure Backup (per GB), Hardware, N-able RMM (quarterly, by device count).</td></tr>
-      <tr><td>Payroll</td><td>QBO Payroll (UI)</td><td>Not writable via API. Hours arrive as TimeActivity; Drew approves the run; direct deposit as today.</td></tr>
+      <tr><td>Payroll</td><td>QBO Payroll (UI)</td><td>Not writable via API. Hours arrive as TimeActivity; Scott approves the run; direct deposit as today.</td></tr>
       <tr><td>Nightly RMM sync</td><td>N-sight Data Extraction API → app</td><td><code>list_clients</code>, <code>list_devices_at_client</code>, <code>list_failing_checks</code>, patch status. XML, API key, 60 calls/min, so it runs on a schedule. Feeds the device picker, portal health panel, RMM invoice counts and alert→time-entry nudges.</td></tr>
       <tr><td>Invoice due / past due</td><td><code>Invoice.DueDate</code>, <code>Balance</code> + payment webhook</td><td>App polls open invoices hourly and gets webhooks on payment; due state drives portal banners and the reminder schedule. Reminders are sent by the app (branded, portal link) rather than QBO's built-in reminders so wording, cadence and policy are yours.</td></tr>
       <tr><td>Anything fails</td><td><code>SyncLog</code> + retry</td><td>Entries stay <i>Approved</i> (not <i>Synced</i>) and retry every 15 min; red banner in Billing until clear.</td></tr>
@@ -293,7 +294,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
   </table></div>
 
   <div class="nextcard"><div><b>Next: where it can go</b><span>Version 1 scope and the menu of what can follow — about three minutes.</span></div><a href="../possibilities/">See the roadmap →</a></div>
-  <footer>November 2026 · Prepared by Drew Campbell for the owner of Camquest Systems, LLC · Block sizes, prices, rounding minimums and tech pay rates are Camquest’s real ones. Client names, hours, storage, hardware and invoice numbers are invented samples. Nothing here is connected to QuickBooks or N-sight.</footer>
+  <footer>November 2026 · Prepared by Drew Campbell for Scott, owner of Camquest Systems, LLC · Block sizes, prices, rounding minimums and tech pay rates are Camquest’s real ones. Client names, hours, storage, hardware and invoice numbers are invented samples. Nothing here is connected to QuickBooks or N-sight.</footer>
 </div>
 
 <script>
@@ -335,7 +336,7 @@ function player(host, steps, renderStep, opts) {
 
 /* ---------- 1. One quarter hour, end to end ---------- */
 function flow(host) {
-  const steps = ['Tech logs time', 'Rounding & minimums', 'Drew approves', 'Three postings at once', 'Month end: revenue recognized'];
+  const steps = ['Tech logs time', 'Rounding & minimums', 'Scott approves', 'Three postings at once', 'Month end: revenue recognized'];
   const node = (cls, title, body, state) => '<div class="cq-node ' + cls + (state ? ' is-' + state : '') + '"><div class="cq-nt">' + title + '</div><div class="cq-nb">' + body + '</div></div>';
   return player(host, steps, k => {
     const entry = k === 0 ? 'Rick · Westheimer Dental<br><b>0.40 h</b> on-site · "replaced front-desk printer"' : 'Rick · Westheimer Dental<br><b>1.00 h</b> billed <span class="cq-dim">(0.40 → 0.50 → on-site min 1.00)</span>';
@@ -346,14 +347,14 @@ function flow(host) {
     return '<div class="cq-flow">' +
       node('a', 'Time entry', entry, k === 0 ? 'active' : k === 1 ? 'active' : 'done') +
       '<div class="cq-arrow' + (k >= 2 ? ' on' : '') + '">→</div>' +
-      node('b', 'Approval', k < 2 ? '<span class="cq-dim">Submitted · waiting for Drew</span>' : '<b>Approved</b> by Drew ✓', k === 2 ? 'active' : k > 2 ? 'done' : '') +
+      node('b', 'Approval', k < 2 ? '<span class="cq-dim">Submitted · waiting for Scott</span>' : '<b>Approved</b> by Scott ✓', k === 2 ? 'active' : k > 2 ? 'done' : '') +
       '<div class="cq-fan' + (k >= 3 ? ' on' : '') + '"><span>→</span><span>→</span><span>→</span></div>' +
       '<div class="cq-col">' +
         node('c', 'Client block', block + '<div class="cq-track"><div style="width:' + barW + '%"></div></div>', k === 3 ? 'active' : k > 3 ? 'done' : '') +
         node('d', 'Tech pay accrual', pay, k === 3 ? 'active' : k > 3 ? 'done' : '') +
         node('e', 'QuickBooks Online', qbo, k >= 3 ? 'active' : '') +
       '</div></div>' +
-      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval does three things at once: the client’s block drops 1.00 h, Rick earns $50, and the hours go to QuickBooks for payroll.', 'At month end the app tells QuickBooks that 1.00 h × $160 of prepaid money has now been earned — the entry Tami used to make by hand.'][k] + '</p>';
+      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Scott reviews the queue once a week and approves.', 'One approval does three things at once: the client’s block drops 1.00 h, Rick earns $50, and the hours go to QuickBooks for payroll.', 'At month end the app tells QuickBooks that 1.00 h × $160 of prepaid money has now been earned — the entry Tami used to make by hand.'][k] + '</p>';
   }, { interval: 2200 });
 }
 
@@ -384,8 +385,8 @@ function sync(host) {
       src('Azure', 'Backup GB per client', k === 1, k > 1) +
       src('QuickBooks Online', 'Open invoices · payments posted', k === 2, k > 2) +
       '</div><div class="cq-core' + (k >= 3 ? ' on' : '') + '"><div class="cq-nt">Camquest ledger</div><div class="cq-nb">' + (k < 3 ? 'receiving…' : k === 3 ? 'reconciling' : 'reconciled · suggestions drafted') + '</div>' + checks + '</div>' +
-      '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Drew’s Monday digest</div></div></div>' +
-      '<p class="cq-cap">' + ['Every night the app pulls the device list and any failing checks from N-sight — read-only, at the pace N-able allows.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
+      '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Scott’s Monday digest</div></div></div>' +
+      '<p class="cq-cap">' + ['Every night the app pulls the device list and any failing checks from N-sight — read-only, at the pace N-able allows.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Scott gets one digest instead of four logins.'][k] + '</p>';
   }, { interval: 2000 });
 }
 
@@ -458,7 +459,8 @@ const EMP = {
   mark:   { name: 'Mark',   rate: 85, type: 'billed' },
   rick:   { name: 'Rick',   rate: 50, type: 'billed' },
   robert: { name: 'Robert', rate: 60, type: 'billed' },
-  drew:   { name: 'Drew',   rate: 0,  type: 'salary' }
+  zach:   { name: 'Zach',   rate: 0,  type: 'salary' },
+  scott:  { name: 'Scott',  rate: 0,  type: 'salary' }
 };
 const CLIENTS = [
   { id: 'bayou',  name: 'Bayou Title Co.',        tm: 180, rmm: true,  gb: 412, contact: 'Janet R.' },
@@ -530,10 +532,10 @@ const PICK_KEY = 'camquest-mock-picks';
 const DECISIONS = [
   { key: 'overdraft', q: 'When a block runs out mid-entry', opts: [
       ['tm', 'Bill overage at T&M ($180)'], ['next', 'Overdraft; next block absorbs it'], ['refuse', 'Hold entry until a block is sold']],
-    note: 'Live in the mock: switch to the "Block exhausted" scenario, sign in as Drew and approve.' },
-  { key: 'pastdue', q: 'When a client is past due', opts: [['remind', 'Reminders only'], ['noblocks', 'Reminders + no new block sales'], ['pause', 'Reminders + pause non-emergency support at 30 days']], note: 'Live in the mock: Bayou Title and Gulf Coast are 7 days past due, Heights 3 days. Check Receivables on the owner console and the portal as their contact.' },
+    note: 'Live in the mock: switch to the "Block exhausted" scenario, sign in as Scott and approve.' },
+  { key: 'pastdue', q: 'When a client is past due', opts: [['remind', 'Reminders only'], ['noblocks', 'Reminders + no new block sales'], ['pause', 'Reminders + pause non-emergency support at 30 days']], note: 'Live in the mock: Bayou Title and Gulf Coast are 7 days past due, Heights 3 days. Check Receivables as Scott and the portal as their contact.' },
   { key: 'terms', q: 'Payment terms', opts: [['net30', 'Net 30 (current)'], ['net15', 'Net 15'], ['receipt', 'Due on receipt for blocks, Net 30 for monthly']] },
-  { key: 'approver', q: 'Who approves time', opts: [['owner', 'Owner'], ['drew', 'Drew'], ['owner-drew', 'Owner or Drew'], ['auto', 'Auto-approve, weekly review']] },
+  { key: 'approver', q: 'Who approves time', opts: [['scott', 'Scott'], ['scott-zach', 'Scott or Zach'], ['auto', 'Auto-approve, Scott reviews weekly']] },
   { key: 'nopaidblock', q: 'Work without a paid block', opts: [['tm', 'Bill at T&M $180 — the discount is for paying first'], ['grace', 'Allow an invoiced-but-unpaid block for 7 days'], ['refuse', 'Non-emergency work waits for payment']], note: 'Live in the mock: Gulf Coast\u2019s second 40-hour block is invoiced but unpaid, so its hours show as pending.' },
   { key: 'paycomp', q: 'Tech pay structure (compliance)', opts: [['base-comm', 'Hourly base + per-billed-hour commission'], ['billed-only', 'Billed hours only, pending payroll advisor review']], note: 'Pay only on billed hours is piece-rate for W-2 staff; minimum wage and overtime still apply to hours worked.' },
   { key: 'salaried', q: 'Salaried staff logging billable time', opts: [['burn', 'Burns client block, no pay effect'], ['nolog', 'Salaried staff don’t log time']] },
@@ -585,13 +587,13 @@ function sendReminder(inv) {
   } }; render();
 }
 function sendBack(e) {
-  state.confirm = { title: 'Send this entry back to ' + EMP[e.emp].name + '?', body: 'It returns to their drafts with your note. In the real app you type the reason; the mock uses "Please confirm client and device."', ok: 'Send back', onOk: () => { e.status = 'draft'; e.hold = 'Sent back by owner: please confirm client and device'; state.confirm = null; toast('Sent back to ' + EMP[e.emp].name + ' with a note.'); } }; render();
+  state.confirm = { title: 'Send this entry back to ' + EMP[e.emp].name + '?', body: 'It returns to their drafts with your note. In the real app you type the reason; the mock uses "Please confirm client and device."', ok: 'Send back', onOk: () => { e.status = 'draft'; e.hold = 'Sent back by Scott: please confirm client and device'; state.confirm = null; toast('Sent back to ' + EMP[e.emp].name + ' with a note.'); } }; render();
 }
 function markPaid(inv) {
   state.confirm = { title: 'Record payment for ' + inv.id + '?', body: 'Normally QuickBooks tells the app when a payment posts (webhook). This simulates that: ' + money(inv.amount) + ' from ' + clientOf(inv.client).name + ' marks the invoice paid and stops reminders.', ok: 'Record payment', onOk: () => { inv.paid = TODAY; const blk = state.data.blocks.find(b => b.invoice === inv.id); if (blk) { blk.paid = true; state.data.ledger.unshift({ ts: '11-07 ' + nowish(), block: blk.id, client: inv.client, delta: blk.hours, memo: 'Payment posted · ' + inv.id + ' · hours unlocked' }); } state.confirm = null; toast('Payment recorded for ' + inv.id + '.' + (blk ? ' ' + blk.hours + ' block hours unlocked.' : ' Reminders stopped.')); } }; render();
 }
-function isAdmin() { return state.role === 'drew'; }
-function isTech() { return ['mark', 'rick', 'robert'].includes(state.role); }
+function isAdmin() { return state.role === 'scott'; }
+function isTech() { return ['mark', 'rick', 'robert', 'zach'].includes(state.role); }
 function toast(msg) {
   state.toast = msg; render();
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { state.toast = null; render(); }, 2600);
@@ -720,9 +722,9 @@ function renderTime() {
   const rounded = Math.ceil(d / 0.25 - 1e-9) * 0.25;
   const why = f.mode === 'onsite' && rounded < 1 ? 'rounded ' + d + ' → ' + rounded.toFixed(2) + ', then on-site minimum 1.00' : 'rounded ' + d + ' → ' + rounded.toFixed(2) + (f.mode === 'remote' && rounded < 0.25 ? ', then remote minimum 0.25' : '');
   const emp = EMP[me];
-  const payLine = emp.type === 'billed' ? ' · you earn ' + money(b * emp.rate) + ' on approval' : ' · salaried, no pay effect';
+  const payLine = emp.type === 'billed' ? ' · you earn ' + money(b * emp.rate) + ' on approval' : ' · salaried: burns the client\u2019s block, no pay effect';
   const cRem = sumRemaining(f.client);
-  const warn = cRem < b ? '<div class="banner warn"><svg class="i"><use href="#i-warn"/></svg><span>' + esc(clientOf(f.client).name) + ' has only ' + hrs(cRem) + ' left. Entry still submits; Drew sees the shortfall in Approvals.</span></div>' : '';
+  const warn = cRem < b ? '<div class="banner warn"><svg class="i"><use href="#i-warn"/></svg><span>' + esc(clientOf(f.client).name) + ' has only ' + hrs(cRem) + ' left. Entry still submits; Scott sees the shortfall in Approvals.</span></div>' : '';
   const suggestion = !state.suggestionDismissed && !state.data.entries.some(e => e.emp === me && e.device === 'GULF-DC01' && e.date === TODAY) ? '<div class="banner info"><svg class="i"><use href="#i-sync"/></svg><span><b>From RMM:</b> GULF-DC01 (Gulf Coast Logistics) backup check failed 06:12 and cleared 08:40 today. Was that you? <button class="btn ghost" id="useSuggestion" style="padding:1px 8px">Log time for it</button> <button class="btn ghost" id="dismissSuggestion" style="padding:1px 8px">Not me</button></span></div>' : '';
   return '<h4>My time</h4><p class="sub">' + esc(emp.name) + (emp.type === 'billed' ? ' · $' + emp.rate + '/h on approved billable time' : ' · salaried') + ' · week of Nov 2</p>' + suggestion +
     '<div class="form">' +
@@ -833,7 +835,7 @@ function renderPay() {
   ];
   return '<h4>My pay</h4><p class="sub">' + esc(emp.name) + ' · $' + emp.rate + '/h on approved billable time ($' + (emp.rate / 4).toFixed(2) + ' per quarter hour) · pay period Nov 1 – Nov 15, direct deposit Nov 20</p>' +
     '<div class="grid2"><div class="card"><h5>Earned this period (approved)</h5><div class="kpi">' + money(earned) + '<small>' + hrs(hoursApproved) + '</small></div><div class="mini">Only approved entries count. This is what flows to QuickBooks Payroll.</div></div>' +
-    '<div class="card"><h5>Awaiting approval</h5><div class="kpi" style="color:var(--muted)">' + money(pendingPay) + '<small>' + pending.length + ' entr' + (pending.length === 1 ? 'y' : 'ies') + '</small></div><div class="mini">' + (pending.some(e => e.status === 'held') ? 'One or more entries are held pending a client block sale.' : 'Drew approves weekly, usually Friday.') + '</div></div></div>' +
+    '<div class="card"><h5>Awaiting approval</h5><div class="kpi" style="color:var(--muted)">' + money(pendingPay) + '<small>' + pending.length + ' entr' + (pending.length === 1 ? 'y' : 'ies') + '</small></div><div class="mini">' + (pending.some(e => e.status === 'held') ? 'One or more entries are held pending a client block sale.' : 'Scott approves weekly, usually Friday.') + '</div></div></div>' +
     '<h3 style="margin-top:18px">This period by entry</h3>' +
     (mine.length ? '<table><thead><tr><th>Date</th><th>Client</th><th class="num">Billed</th><th class="num">Pay</th><th>Status</th></tr></thead><tbody>' +
       mine.slice().sort((a, b) => b.date.localeCompare(a.date)).map(e => { const b = e.billed || billedHours(e.dur, e.mode); return '<tr><td>' + esc(e.date) + '</td><td>' + esc(clientOf(e.client).name) + '</td><td class="num">' + b.toFixed(2) + '</td><td class="num' + (e.status === 'approved' ? '' : ' mini') + '">' + money(b * emp.rate) + '</td><td>' + statusTag(e) + '</td></tr>'; }).join('') + '</tbody></table>' : '<div class="empty">Nothing logged this period yet.</div>') +
@@ -864,7 +866,7 @@ function renderAR() {
 function render() {
   const views = viewsFor();
   if (!views.some(v => v[0] === state.view)) state.view = views[0][0];
-  const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Owner console' : ' · Tech');
+  const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Owner' : EMP[state.role].type === 'salary' ? ' · Salaried' : ' · Tech');
   const pendingCount = state.data.entries.filter(e => e.status === 'submitted' || e.status === 'held').length;
   const pastDueCount = state.data.invoices.filter(i => invStatus(i).key === 'past').length;
   const content = { time: renderTime, pay: renderPay, ar: renderAR, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
@@ -887,8 +889,8 @@ function render() {
   wire();
 }
 function captionFor() {
-  const s = { normal: 'Normal week: four submitted entries from three techs.', low: 'Westheimer Dental sits at 2.5 h — low-balance alert fires in Clients and the portal.', exhausted: 'Westheimer Dental has 0.75 h left and 3.0 h submitted. Approving as Drew proves the overdraft rule you picked in Decisions.', qbodown: 'QBO is unreachable: approvals still post to the ledger, records queue with Retry, Billing shows the outage.' }[state.scenario];
-  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Drew you see every tab; Approvals is where the three postings happen, Receivables shows aging, past-due badges and the automatic reminder schedule.' : 'As a tech you see your own time, My pay and read-only balances; the RMM banner offers to log time for a check that failed and cleared, and the device picker comes from N-sight.';
+  const s = { normal: 'Normal week: four submitted entries from three techs.', low: 'Westheimer Dental sits at 2.5 h — low-balance alert fires in Clients and the portal.', exhausted: 'Westheimer Dental has 0.75 h left and 3.0 h submitted. Approving as Scott proves the overdraft rule you picked in Decisions.', qbodown: 'QBO is unreachable: approvals still post to the ledger, records queue with Retry, Billing shows the outage.' }[state.scenario];
+  const r = state.role === 'client' ? 'As a client you only see the portal: balance, approved work with tech notes, invoices, and a Buy button that creates a real QBO invoice.' : isAdmin() ? 'As Scott you see every tab; Approvals is where the three postings happen, Receivables shows aging, past-due badges and the automatic reminder schedule.' : 'As a tech you see your own time, My pay and read-only balances; the RMM banner offers to log time for a check that failed and cleared, and the device picker comes from N-sight.';
   return s + ' ' + r;
 }
 
