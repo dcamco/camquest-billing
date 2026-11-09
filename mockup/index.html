@@ -20,7 +20,7 @@
   --bg: #f7f7f5; --panel: #ffffff; --panel-2: #f2f1ee;
   --ink: #1c1c1a; --ink-2: #3b3a36; --muted: #5f5e59;
   --line: #e4e2de; --line-strong: #cfccc6;
-  --accent: #b07d14; --accent-hover: #93660d; --accent-soft: #fbf1dc; --gold: #e0a028;
+  --accent: #8a6210; --accent-hover: #6f4e0b; --accent-soft: #fbf1dc; --gold: #e0a028;
   --ok: #1d7646; --ok-soft: #e2f2e8;
   --warn: #8a5a00; --warn-soft: #fbf0d6;
   --bad: #b3261e; --bad-soft: #fbe8e6;
@@ -38,7 +38,7 @@ a { color: var(--accent); }
 h1 { font-size: 30px; line-height: 1.2; margin: 10px 0 12px; font-weight: 650; letter-spacing: -.01em; }
 .lede { font-size: 17px; color: var(--ink-2); max-width: 820px; margin: 0 0 10px; }
 .verdict { border-left: 4px solid var(--accent); padding: 8px 14px; background: var(--accent-soft); color: var(--ink-2); margin: 14px 0 22px; border-radius: 0 8px 8px 0; max-width: 820px; }
-h2 { font-size: 22px; margin: 48px 0 10px; font-weight: 650; }
+h2 { font-size: 22px; margin: 48px 0 10px; font-weight: 650; scroll-margin-top: 64px; }
 h3 { font-size: 16px; margin: 20px 0 6px; font-weight: 650; }
 p { margin: 8px 0; max-width: 820px; }
 .pillnav { position: sticky; top: 0; z-index: 20; background: rgba(247,247,245,.92); backdrop-filter: blur(8px); padding: 10px 0; border-bottom: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 20px; }
@@ -102,6 +102,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .tag.retry { background: var(--warn-soft); color: var(--warn); }
 .tag.tm { background: var(--accent-soft); color: var(--accent); }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid2.kpi3 { grid-template-columns: repeat(3, 1fr); }
 .card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--panel); }
 .card h5 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
 .kpi { font-size: 26px; font-weight: 650; letter-spacing: -.01em; }
@@ -195,9 +196,8 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
 
 <div class="wrap">
   <div class="eyebrow"><span>Camquest Systems, LLC · cqsys.com</span><span>·</span><span>Time-block billing &amp; payroll</span><span>·</span><span class="status">For review</span><span>·</span><span>Nov 7, 2026</span></div>
-  <h1>Get paid up front, capture every hour, stop chasing: one ledger entry burns the client's prepaid block, accrues the tech's pay, and queues the QuickBooks record.</h1>
-  <p class="lede">The two frictions this removes: techs not entering time (work going out free) and clients drifting from prepaid blocks to T&amp;M paid late after hounding. This is a working slice of the proposed system. Switch who you are (a tech, Drew, or a client) and the scenario above the frame, then use it like the real thing: log time and watch the rounding rules apply, approve the queue and watch balances and pay move, run month-end, or buy a block from the portal.</p>
-  <div class="verdict"><b>Why:</b> techs weren't entering time, clients were paying late instead of up front, and Tami was doing every deduction, pay entry, QuickBooks line and collection call by hand. This replaces all of it so she can retire and the business runs on a system a buyer could take over. <b>Design rule:</b> the block discount is the reward for paying first — hours unlock when payment posts, work without a paid block bills at T&amp;M, and techs are paid only on logged, approved time. <b>Decided so far:</b> QuickBooks Online (Plus + Payroll Core) replaces Desktop before build; hosted on Azure with Entra sign-in; the app's ledger is the source of truth and QBO is the books. RMM is N-able N-sight, synced nightly into the device picker, portal health panel and RMM invoice counts; backup is native Azure (not Cove). <b>Open:</b> what happens when a block runs out, who approves, RMM fee structure, and whether salaried time burns client blocks. Pick those in <a href="#decisions">Decisions</a>.</div>
+  <h1>Get paid up front. Capture every hour. Stop chasing.</h1>
+    <div class="verdict"><b>What you’re looking at:</b> a working slice of the proposed system. One approval burns the client’s prepaid block, accrues the tech’s pay and sends the record to QuickBooks. Blocks only hold hours once they’re paid; work without a paid block bills at T&amp;M; techs are paid only on logged, approved time. <b>Assumed for this mockup (to confirm):</b> QuickBooks Online with Payroll Core, hosted on Azure, N-able N-sight for RMM. <b>Your decisions</b> are in <a href="#decisions">section 4</a> — tapping them changes how the mock behaves.</div>
 
   <nav class="pillnav" aria-label="Sections">
     <a href="#try">1 · Try it</a>
@@ -206,8 +206,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
     <a href="#decisions">4 · Decisions</a>
     <a href="#qbo">5 · QBO mapping</a>
     <span style="flex:1"></span>
-    <a href="../presentation/" class="ext">Proposal ↗</a>
-    <a href="../possibilities/" class="ext">Roadmap ↗</a>
+    <a href="../possibilities/" class="ext">Next: Roadmap →</a>
   </nav>
 
   <h2 id="try">1 · Try it</h2>
@@ -218,7 +217,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
         <button data-role="mark">Mark (tech)</button>
         <button data-role="rick">Rick (tech)</button>
         <button data-role="robert">Robert (tech)</button>
-        <button data-role="drew">Drew (admin)</button>
+        <button data-role="drew">Owner console (Drew)</button>
         <button data-role="client">Client contact</button>
       </div>
     </div>
@@ -236,7 +235,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
     <div class="ctl"><label>&nbsp;</label><button class="btn" id="resetBtn"><svg class="i"><use href="#i-sync"/></svg> Reset data</button></div>
   </div>
 
-  <div class="frame" id="frame" aria-live="polite"></div>
+  <div class="frame" id="frame"></div>
   <p class="caption" id="caption"></p>
 
   <h2 id="anatomy">2 · How the money flows</h2>
@@ -262,7 +261,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
 
   <h2 id="alternatives">3 · Alternatives considered</h2>
   <div class="compare">
-    <div class="card"><h5>Custom app (this mockup)</h5><p style="font-size:14px">Exactly your rules, your portal, your QBO mapping. Azure cost ~$60–120/mo. You own the code; maintainable from Claude Code. Cost is build time and you are the vendor.</p></div>
+    <div class="card"><h5>Custom app (this mockup)</h5><p style="font-size:14px">Exactly Camquest’s rules, portal and QuickBooks mapping. Azure hosting on the order of $100/month. Camquest owns the code; Drew builds and maintains it, with a runbook so anyone can take it over.</p></div>
     <div class="card"><h5>MSP PSA tool with QBO sync</h5><p style="font-size:14px">Several PSAs do prepaid-hour blocks, ticketing and QBO sync out of the box, per-tech per month. Faster start; you'd bend your pay-per-quarter-hour rule and portal to their model, and per-client block rates are often awkward.</p></div>
     <div class="card"><h5>QBO alone + spreadsheets</h5><p style="font-size:14px">QBO can track retainers and timesheets natively. No portal, no automatic rounding/minimums, no pay accrual, and someone still keys the deductions. This is roughly what the bookkeeper does today.</p></div>
     <div class="card"><h5>Stay on QB Desktop</h5><p style="font-size:14px">Integration via the QBXML SDK / Web Connector: Windows-only, polling, breaks on upgrades. Not recommended if the Online move is happening anyway.</p></div>
@@ -271,7 +270,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
   <p>The mock posts block sales to a liability and recognizes revenue as hours burn (accrual). If your CPA files you cash-basis and doesn't want the liability account, the item flips to revenue at sale and the month-end journal entry is skipped. Ten-minute question for the CPA; the app supports both.</p>
 
   <h2 id="decisions">4 · Decisions</h2>
-  <p>Your picks save in this browser and change how the mock behaves (the overdraft rule is live in the approval queue). Copy them into our thread when done.</p>
+  <p>Your picks save in this browser and change how the mock behaves (the overdraft rule is live in the approval queue). When you’re done, tap <b>Copy picks</b> and email them to Drew (dcampbell@cqsys.com).</p>
   <div id="decisions-list"></div>
   <div class="decision"><div class="q">Overall direction</div><div class="stars" id="stars" role="group" aria-label="Rating"></div><div class="note">1 = rethink it · 5 = build it</div></div>
   <div style="display:flex;gap:8px;margin-top:10px"><button class="btn primary" id="copyPicks">Copy picks</button><button class="btn" id="clearPicks">Clear picks</button></div>
@@ -285,7 +284,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
       <tr><td>Block sold</td><td><code>Invoice</code> (or <code>SalesReceipt</code>)</td><td>Item <i>Prepaid Support Block 20/40</i> → Unearned Revenue. Payment link via QBO Payments.</td></tr>
       <tr><td>Time approved</td><td><code>TimeActivity</code></td><td>Employee, Customer, hours, service item <i>Support — Block</i> or <i>Support — T&amp;M</i>. Feeds payroll hours.</td></tr>
       <tr><td>Month-end recognition</td><td><code>JournalEntry</code></td><td>Dr Unearned Revenue / Cr Service Revenue per client, hours × block rate.</td></tr>
-      <tr><td>Monthly invoice</td><td><code>Invoice</code></td><td>Lines: T&amp;M hours, Azure Backup (per GB), Hardware, Enable RMM (quarterly, by client flag).</td></tr>
+      <tr><td>Monthly invoice</td><td><code>Invoice</code></td><td>Lines: T&amp;M hours, Azure Backup (per GB), Hardware, N-able RMM (quarterly, by device count).</td></tr>
       <tr><td>Payroll</td><td>QBO Payroll (UI)</td><td>Not writable via API. Hours arrive as TimeActivity; Drew approves the run; direct deposit as today.</td></tr>
       <tr><td>Nightly RMM sync</td><td>N-sight Data Extraction API → app</td><td><code>list_clients</code>, <code>list_devices_at_client</code>, <code>list_failing_checks</code>, patch status. XML, API key, 60 calls/min, so it runs on a schedule. Feeds the device picker, portal health panel, RMM invoice counts and alert→time-entry nudges.</td></tr>
       <tr><td>Invoice due / past due</td><td><code>Invoice.DueDate</code>, <code>Balance</code> + payment webhook</td><td>App polls open invoices hourly and gets webhooks on payment; due state drives portal banners and the reminder schedule. Reminders are sent by the app (branded, portal link) rather than QBO's built-in reminders so wording, cadence and policy are yours.</td></tr>
@@ -294,7 +293,7 @@ code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); 
   </table></div>
 
   <div class="nextcard"><div><b>Next: where it can go</b><span>Version 1 scope and the menu of what can follow — about three minutes.</span></div><a href="../possibilities/">See the roadmap →</a></div>
-  <footer>Nov 7, 2026 · For Drew / Camquest Systems, LLC (cqsys.com) · Brand gold and wordmark taken from the site logo. Employee names and pay rates, block sizes and prices, rounding minimums and the QBO plan are from our planning thread. Client names, hours, storage GB, hardware items and invoice numbers are invented to exercise the screens. Nothing here is connected to QuickBooks.</footer>
+  <footer>November 2026 · Prepared by Drew Campbell for the owner of Camquest Systems, LLC · Block sizes, prices, rounding minimums and tech pay rates are Camquest’s real ones. Client names, hours, storage, hardware and invoice numbers are invented samples. Nothing here is connected to QuickBooks or N-sight.</footer>
 </div>
 
 <script>
@@ -342,7 +341,7 @@ function flow(host) {
     const entry = k === 0 ? 'Rick · Westheimer Dental<br><b>0.40 h</b> on-site · "replaced front-desk printer"' : 'Rick · Westheimer Dental<br><b>1.00 h</b> billed <span class="cq-dim">(0.40 → 0.50 → on-site min 1.00)</span>';
     const block = k < 3 ? '<b>11.75 h</b> left of 20 @ $160' : '<b>10.75 h</b> left <span class="cq-delta cq-neg">−1.00</span>';
     const pay = k < 3 ? 'Rick · $50/h<br><b>$0.00</b> this period' : 'Rick · $50/h<br><b>$50.00</b> <span class="cq-delta cq-pos">+$50.00</span>';
-    const qbo = k < 3 ? 'TimeActivity<br><span class="cq-dim">waiting</span>' : k === 3 ? 'TimeActivity<br><b>synced</b> · Rick · 1.0h · billable' : 'JournalEntry<br><b>Unearned −$160 → Revenue +$160</b>';
+    const qbo = k < 3 ? 'Payroll hours<br><span class="cq-dim">nothing sent yet</span>' : k === 3 ? 'Payroll hours<br><b>sent</b> · Rick · 1.0 h · billable' : 'Month-end entry<br><b>$160 moves from prepaid to earned</b>';
     const barW = k < 3 ? 58.75 : 53.75;
     return '<div class="cq-flow">' +
       node('a', 'Time entry', entry, k === 0 ? 'active' : k === 1 ? 'active' : 'done') +
@@ -354,7 +353,7 @@ function flow(host) {
         node('d', 'Tech pay accrual', pay, k === 3 ? 'active' : k > 3 ? 'done' : '') +
         node('e', 'QuickBooks Online', qbo, k >= 3 ? 'active' : '') +
       '</div></div>' +
-      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval writes three immutable postings: the client’s block drops 1.00 h, Rick accrues $50, and a TimeActivity goes to QBO for payroll.', 'At month end the app moves 1.00 h × $160 from Unearned Revenue to Service Revenue — the bookkeeping that used to be done by hand.'][k] + '</p>';
+      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval does three things at once: the client’s block drops 1.00 h, Rick earns $50, and the hours go to QuickBooks for payroll.', 'At month end the app tells QuickBooks that 1.00 h × $160 of prepaid money has now been earned — the entry Tami used to make by hand.'][k] + '</p>';
   }, { interval: 2200 });
 }
 
@@ -364,13 +363,13 @@ function dunning(host) {
   const pts = [0, 60, 70, 82, 94, 100];
   const marks = [['Issued', 0], ['Due', 70], ['+7', 82], ['+14', 94], ['+30', 100]];
   return player(host, steps, k => {
-    const mails = [null, 'Friendly heads-up with pay link', 'Pay link · due today', 'Firmer tone · copy to Drew', 'Copy to Drew · portal banner turns red', null];
+    const mails = [null, 'Friendly heads-up with pay link', 'Pay link · due today', 'Firmer tone · owner copied', 'Owner prompted to call', null];
     const status = ['Open · Net 30', 'Due soon', 'Due today', 'Past due 7 days', 'Past due 14 days', 'Paid · reminders stopped'][k];
     const cls = k === 5 ? 'ok' : k >= 3 ? 'bad' : k >= 1 ? 'warn' : 'info';
     return '<div class="cq-dun"><div class="cq-inv"><div class="cq-nt">INV-1031 · Bayou Title Co. · $499.44</div><span class="cq-pill cq-' + cls + '">' + status + '</span></div>' +
       '<div class="cq-timeline"><div class="cq-tl-fill" style="width:' + pts[k] + '%"></div>' + marks.map(m => '<div class="cq-tl-mark" style="left:' + m[1] + '%"><i></i><span>' + m[0] + '</span></div>').join('') + '<div class="cq-tl-dot" style="left:' + pts[k] + '%"></div></div>' +
-      '<div class="cq-mail' + (mails[k] ? ' on' : '') + '">' + (mails[k] ? '✉ ' + esc(mails[k]) + ' → Janet R.' : (k === 5 ? '✓ QuickBooks reports payment · app stops reminders · block hours unlock' : '&nbsp;')) + '</div>' +
-      '<p class="cq-cap">' + ['The invoice goes out from QuickBooks with a pay-online link. The app knows the due date.', 'Three days before the due date the client gets a gentle nudge. No human involved.', 'On the due date, another. Still automatic.', 'A week past due the tone firms up and Drew is copied. The portal shows it in red.', 'At two weeks Drew is prompted to call. If the policy says so, new block sales pause.', 'The moment QBO reports payment, reminders stop and the client’s portal goes green. Nothing to mark by hand.'][k] + '</p></div>';
+      '<div class="cq-mail' + (mails[k] ? ' on' : '') + (k === 5 ? ' ok' : '') + '">' + (mails[k] ? '✉ ' + esc(mails[k]) + ' → Janet R.' : (k === 5 ? '✓ QuickBooks reports payment · reminders stop · portal turns green' : '&nbsp;')) + '</div>' +
+      '<p class="cq-cap">' + ['The invoice goes out from QuickBooks with a pay-online link. The app knows the due date.', 'Three days before the due date the client gets a gentle nudge. No human involved.', 'On the due date, another. Still automatic.', 'A week past due the tone firms up and the owner is copied. The portal has shown it in red since day one.', 'At two weeks the owner is prompted to make the one call that’s still human. At thirty days the past-due policy applies.', 'The moment QuickBooks reports payment, reminders stop and the client’s portal goes green. Nothing to mark by hand.'][k] + '</p></div>';
   }, { interval: 2000 });
 }
 
@@ -386,7 +385,7 @@ function sync(host) {
       src('QuickBooks Online', 'Open invoices · payments posted', k === 2, k > 2) +
       '</div><div class="cq-core' + (k >= 3 ? ' on' : '') + '"><div class="cq-nt">Camquest ledger</div><div class="cq-nb">' + (k < 3 ? 'receiving…' : k === 3 ? 'reconciling' : 'reconciled · suggestions drafted') + '</div>' + checks + '</div>' +
       '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Drew’s Monday digest</div></div></div>' +
-      '<p class="cq-cap">' + ['Every night the app pulls device lists and failing checks from N-sight — read-only, paced under its rate limit.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
+      '<p class="cq-cap">' + ['Every night the app pulls the device list and any failing checks from N-sight — read-only, at the pace N-able allows.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
   }, { interval: 2000 });
 }
 
@@ -427,6 +426,9 @@ const css = `
 .cq-tl-dot{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--ink,#1c1c1a);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transform:translate(-50%,-50%);transition:left .6s}
 .cq-mail{border:1px dashed var(--line-strong,#cfccc6);border-radius:8px;padding:8px 12px;font-size:13.5px;color:var(--muted,#5f5e59);transition:all .25s;min-height:38px}
 .cq-mail.on{border-style:solid;border-color:var(--accent,#b07d14);background:var(--accent-soft,#fbf1dc);color:var(--ink,#1c1c1a)}
+.cq-mail.ok{border-style:solid;border-color:var(--ok,#1d7646);background:var(--ok-soft,#e2f2e8);color:var(--ok,#1d7646);font-weight:600}
+.cq-mail.ok{border-style:solid;border-color:var(--ok,#1d7646);background:var(--ok-soft,#e2f2e8);color:var(--ok,#1d7646);font-weight:600}
+.cq-mail.ok{border-style:solid;border-color:var(--ok,#1d7646);background:var(--ok-soft,#e2f2e8);color:var(--ok,#1d7646);font-weight:600}
 .cq-sync{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:12px;align-items:start}
 .cq-srcs{display:grid;gap:8px}
 .cq-src{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--panel-2,#f2f1ee);transition:all .25s;opacity:.7}
@@ -439,7 +441,7 @@ const css = `
 .cq-outs{display:grid;gap:8px;opacity:.35;transition:opacity .25s}
 .cq-outs.on{opacity:1}
 .cq-outs div{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--accent-soft,#fbf1dc)}
-@media (max-width:760px){.cq-flow{grid-template-columns:1fr;gap:6px}.cq-arrow,.cq-fan{transform:rotate(90deg);height:24px;display:flex;align-items:center;justify-content:center}.cq-fan{gap:6px;grid-auto-flow:column}.cq-sync{grid-template-columns:1fr}.cq-outs{grid-auto-flow:column}}
+@media (max-width:760px){.cq-flow{grid-template-columns:1fr;gap:6px}.cq-arrow,.cq-fan{transform:rotate(90deg);height:24px;display:flex;align-items:center;justify-content:center}.cq-fan span:not(:first-child){display:none}.cq-sync{grid-template-columns:1fr}.cq-outs{grid-auto-flow:column}}
 @media (prefers-reduced-motion:reduce){.cq-node,.cq-track>div,.cq-tl-fill,.cq-tl-dot,.cq-mail,.cq-src,.cq-core,.cq-outs{transition:none}}
 `;
 const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
@@ -480,7 +482,7 @@ function seed(scenario) {
     { id: 'B-1001', client: 'bayou',   hours: 40, rate: 140, remaining: 23.5, bought: '2026-08-14' },
     { id: 'B-1004', client: 'west',    hours: 20, rate: 160, remaining: 11.75, bought: '2026-09-30' },
     { id: 'B-1002', client: 'gulf',    hours: 40, rate: 140, remaining: 3.25, bought: '2026-07-02' },
-    { id: 'B-1007', client: 'gulf',    hours: 40, rate: 140, remaining: 40, bought: '2026-10-28' },
+    { id: 'B-1007', client: 'gulf',    hours: 40, rate: 140, remaining: 40, bought: '2026-10-28', paid: false, invoice: 'INV-1034' },
     { id: 'B-1005', client: 'heights', hours: 20, rate: 160, remaining: 14, bought: '2026-10-05' }
   ];
   if (scenario === 'low')       blocks[1].remaining = 2.5;
@@ -494,14 +496,15 @@ function seed(scenario) {
     { id: 6, emp: 'robert', client: 'bayou', date: '2026-10-29', dur: 3.0, mode: 'onsite', note: 'Switch replacement, VLAN retag', status: 'approved', billed: 3, synced: true, block: 'B-1001' }
   ];
   const invoices = [
-    { id: 'INV-1031', client: 'bayou',   desc: 'Azure Backup 412 GB · Enable RMM Q4', amount: 499.44, issued: '2026-10-01', due: '2026-10-31', paid: null },
+    { id: 'INV-1031', client: 'bayou',   desc: 'Azure Backup 412 GB · N-able RMM Q4', amount: 499.44, issued: '2026-10-01', due: '2026-10-31', paid: null },
     { id: 'INV-1029', client: 'bayou',   desc: 'Prepaid Support Block 40',            amount: 5600,   issued: '2026-08-14', due: '2026-09-13', paid: '2026-08-20' },
     { id: 'INV-1035', client: 'west',    desc: 'Azure Backup 96 GB',                   amount: 11.52,  issued: '2026-11-01', due: '2026-12-01', paid: null },
     { id: 'INV-1026', client: 'west',    desc: 'Prepaid Support Block 20',            amount: 3200,   issued: '2026-09-30', due: '2026-10-30', paid: '2026-10-02' },
     { id: 'INV-1033', client: 'gulf',    desc: 'Azure Backup 1,180 GB · RMM Q4 · UniFi switch', amount: 1280.60, issued: '2026-10-01', due: '2026-10-31', paid: null },
     { id: 'INV-1034', client: 'gulf',    desc: 'Prepaid Support Block 40',            amount: 5600,   issued: '2026-10-28', due: '2026-11-27', paid: null },
     { id: 'INV-1030', client: 'heights', desc: 'Azure Backup 220 GB',                  amount: 26.40,  issued: '2026-10-01', due: '2026-10-31', paid: '2026-10-15' },
-    { id: 'INV-1032', client: 'heights', desc: 'Prepaid Support Block 20',            amount: 3200,   issued: '2026-10-05', due: '2026-11-04', paid: null }
+    { id: 'INV-1032', client: 'heights', desc: 'Prepaid Support Block 20',            amount: 3200,   issued: '2026-10-05', due: '2026-11-04', paid: '2026-10-06' },
+    { id: 'INV-1036', client: 'heights', desc: 'Azure Backup 220 GB · UniFi AP',        amount: 215.40, issued: '2026-10-05', due: '2026-11-04', paid: null }
   ];
   const reminders = [
     { ts: '2026-10-28', client: 'bayou', inv: 'INV-1031', kind: 'Due in 3 days', to: 'Janet R.' },
@@ -528,21 +531,21 @@ const DECISIONS = [
   { key: 'overdraft', q: 'When a block runs out mid-entry', opts: [
       ['tm', 'Bill overage at T&M ($180)'], ['next', 'Overdraft; next block absorbs it'], ['refuse', 'Hold entry until a block is sold']],
     note: 'Live in the mock: switch to the "Block exhausted" scenario, sign in as Drew and approve.' },
-  { key: 'pastdue', q: 'When a client is past due', opts: [['remind', 'Reminders only'], ['noblocks', 'Reminders + no new block sales'], ['pause', 'Reminders + pause non-emergency support at 30 days']], note: 'Live in the mock: Bayou Title and Gulf Coast are 7 days past due. Check Receivables as Drew and the portal as their contact.' },
+  { key: 'pastdue', q: 'When a client is past due', opts: [['remind', 'Reminders only'], ['noblocks', 'Reminders + no new block sales'], ['pause', 'Reminders + pause non-emergency support at 30 days']], note: 'Live in the mock: Bayou Title and Gulf Coast are 7 days past due, Heights 3 days. Check Receivables on the owner console and the portal as their contact.' },
   { key: 'terms', q: 'Payment terms', opts: [['net30', 'Net 30 (current)'], ['net15', 'Net 15'], ['receipt', 'Due on receipt for blocks, Net 30 for monthly']] },
-  { key: 'approver', q: 'Who approves time', opts: [['drew', 'Drew only'], ['drew-mark', 'Drew or Mark'], ['auto', 'Auto-approve, Drew reviews weekly']] },
+  { key: 'approver', q: 'Who approves time', opts: [['owner', 'Owner'], ['drew', 'Drew'], ['owner-drew', 'Owner or Drew'], ['auto', 'Auto-approve, weekly review']] },
+  { key: 'nopaidblock', q: 'Work without a paid block', opts: [['tm', 'Bill at T&M $180 — the discount is for paying first'], ['grace', 'Allow an invoiced-but-unpaid block for 7 days'], ['refuse', 'Non-emergency work waits for payment']], note: 'Live in the mock: Gulf Coast\u2019s second 40-hour block is invoiced but unpaid, so its hours show as pending.' },
+  { key: 'paycomp', q: 'Tech pay structure (compliance)', opts: [['base-comm', 'Hourly base + per-billed-hour commission'], ['billed-only', 'Billed hours only, pending payroll advisor review']], note: 'Pay only on billed hours is piece-rate for W-2 staff; minimum wage and overtime still apply to hours worked.' },
   { key: 'salaried', q: 'Salaried staff logging billable time', opts: [['burn', 'Burns client block, no pay effect'], ['nolog', 'Salaried staff don’t log time']] },
   { key: 'rmmfee', q: 'RMM fee structure', opts: [['flat', 'Flat per client, device count shown'], ['perdevice', 'Per device (server / workstation rates)'], ['tiered', 'Tiered by device count']], note: 'Device counts come from the N-sight Data Extraction API nightly; the invoice line shows the count either way.' },
   { key: 'backupsrc', q: 'Azure backup GB source', opts: [['azure', 'Native Azure Backup — Cost Management API'], ['manual', 'Keyed in monthly']], note: 'Not Cove today. If you move backup to Cove later it rides the same N-able sync.' },
-  { key: 'hardware', q: 'Hardware pricing', opts: [['markup', 'Fixed markup %'], ['deal', 'Priced per deal']] },
   { key: 'accounting', q: 'Block sale treatment', opts: [['accrual', 'Liability, recognize as burned'], ['cash', 'Revenue at sale (cash basis)']] },
-  { key: 'stack', q: 'Stack', opts: [['dotnet', '.NET 8 + Postgres + React'], ['node', 'Node/TS + Postgres + React'], ['claude', 'Whatever is easiest to maintain in Claude Code']] }
 ];
 function loadPicks() { try { return JSON.parse(localStorage.getItem(PICK_KEY) || '{}') || {}; } catch (e) { return {}; } }
 function savePicks(p) { try { localStorage.setItem(PICK_KEY, JSON.stringify(p)); } catch (e) { /* storage unavailable */ } }
 
 const state = {
-  role: 'mark', scenario: 'normal', view: 'time', client: 'west',
+  role: 'mark', scenario: 'normal', view: 'time', client: 'gulf',
   data: seed('normal'), toast: null, confirm: null, menuOpen: false,
   form: { client: 'bayou', date: '2026-11-07', dur: '1.5', mode: 'remote', note: '', device: '' }, suggestionDismissed: false,
   picks: loadPicks(), monthClosed: false
@@ -554,7 +557,9 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const hrs = n => (Math.round(n * 100) / 100).toFixed(2) + ' h';
 const clientOf = id => CLIENTS.find(c => c.id === id);
-const sumRemaining = cid => state.data.blocks.filter(b => b.client === cid).reduce((a, b) => a + b.remaining, 0);
+const isActive = b => b.paid !== false;
+const sumRemaining = cid => state.data.blocks.filter(b => b.client === cid && isActive(b)).reduce((a, b) => a + b.remaining, 0);
+const pendingHours = cid => state.data.blocks.filter(b => b.client === cid && !isActive(b)).reduce((a, b) => a + b.hours, 0);
 function billedHours(dur, mode) {
   const d = parseFloat(dur) || 0;
   const rounded = Math.ceil(d / 0.25 - 1e-9) * 0.25;
@@ -579,8 +584,11 @@ function sendReminder(inv) {
     state.confirm = null; toast('Reminder sent to ' + c.contact + ' for ' + inv.id + '.');
   } }; render();
 }
+function sendBack(e) {
+  state.confirm = { title: 'Send this entry back to ' + EMP[e.emp].name + '?', body: 'It returns to their drafts with your note. In the real app you type the reason; the mock uses "Please confirm client and device."', ok: 'Send back', onOk: () => { e.status = 'draft'; e.hold = 'Sent back by owner: please confirm client and device'; state.confirm = null; toast('Sent back to ' + EMP[e.emp].name + ' with a note.'); } }; render();
+}
 function markPaid(inv) {
-  state.confirm = { title: 'Record payment for ' + inv.id + '?', body: 'Normally QuickBooks tells the app when a payment posts (webhook). This simulates that: ' + money(inv.amount) + ' from ' + clientOf(inv.client).name + ' marks the invoice paid and stops reminders.', ok: 'Record payment', onOk: () => { inv.paid = TODAY; state.confirm = null; toast('Payment recorded for ' + inv.id + '. Reminders stopped.'); } }; render();
+  state.confirm = { title: 'Record payment for ' + inv.id + '?', body: 'Normally QuickBooks tells the app when a payment posts (webhook). This simulates that: ' + money(inv.amount) + ' from ' + clientOf(inv.client).name + ' marks the invoice paid and stops reminders.', ok: 'Record payment', onOk: () => { inv.paid = TODAY; const blk = state.data.blocks.find(b => b.invoice === inv.id); if (blk) { blk.paid = true; state.data.ledger.unshift({ ts: '11-07 ' + nowish(), block: blk.id, client: inv.client, delta: blk.hours, memo: 'Payment posted · ' + inv.id + ' · hours unlocked' }); } state.confirm = null; toast('Payment recorded for ' + inv.id + '.' + (blk ? ' ' + blk.hours + ' block hours unlocked.' : ' Reminders stopped.')); } }; render();
 }
 function isAdmin() { return state.role === 'drew'; }
 function isTech() { return ['mark', 'rick', 'robert'].includes(state.role); }
@@ -617,7 +625,7 @@ function doApprove() {
   let approved = 0, held = 0, burned = 0, tmHours = 0, pay = 0;
   state.data.entries.filter(e => e.status === 'submitted').sort((a, b) => a.date.localeCompare(b.date)).forEach(e => {
     const billed = billedHours(e.dur, e.mode);
-    const blocks = state.data.blocks.filter(b => b.client === e.client && b.remaining > 0).sort((a, b) => a.bought.localeCompare(b.bought));
+    const blocks = state.data.blocks.filter(b => b.client === e.client && isActive(b) && b.remaining > 0).sort((a, b) => a.bought.localeCompare(b.bought));
     const avail = blocks.reduce((a, b) => a + b.remaining, 0);
     const emp = EMP[e.emp];
     if (avail < billed && policy === 'refuse') {
@@ -659,16 +667,17 @@ function nowish() { const d = new Date(); return String(d.getHours()).padStart(2
 function buyBlock(cid, size) {
   state.confirm = {
     title: 'Send invoice for a ' + size + '-hour block?',
-    body: clientOf(cid).name + ' will get a QuickBooks invoice for ' + money(size * BLOCK_PRICE[size]) + ' (' + size + ' h @ $' + BLOCK_PRICE[size] + '/h) with a pay-online link. Hours become available when payment posts; the mock posts it immediately.',
+    body: clientOf(cid).name + ' will get a QuickBooks invoice for ' + money(size * BLOCK_PRICE[size]) + ' (' + size + ' h @ $' + BLOCK_PRICE[size] + '/h) with a pay-online link. The hours show as pending until QuickBooks reports payment — in the mock, use Record payment on the owner\u2019s Receivables tab.',
     ok: 'Send invoice', onOk: () => {
       const id = 'B-' + (state.data.nextBlock++);
-      state.data.blocks.push({ id, client: cid, hours: size, rate: BLOCK_PRICE[size], remaining: size, bought: '2026-11-07' });
-      state.data.invoices.unshift({ id: 'INV-' + (1040 + state.data.nextBlock), client: cid, desc: 'Prepaid Support Block ' + size, amount: size * BLOCK_PRICE[size], issued: TODAY, due: '2026-12-07', paid: null });
-      state.data.ledger.unshift({ ts: '11-07 ' + nowish(), block: id, client: cid, delta: size, memo: 'Block sold · Invoice INV-' + (1040 + state.data.nextBlock) });
-      state.data.qbo.unshift({ id: 'INV-' + (1040 + state.data.nextBlock), what: 'Invoice · ' + clientOf(cid).name + ' · Prepaid Support Block ' + size + ' · ' + money(size * BLOCK_PRICE[size]), status: state.scenario === 'qbodown' ? 'retry' : 'synced' });
+      const invId = 'INV-' + (1036 + (state.data.nextBlock - 1008));
+      state.data.blocks.push({ id, client: cid, hours: size, rate: BLOCK_PRICE[size], remaining: size, bought: '2026-11-07', paid: false, invoice: invId });
+      state.data.invoices.unshift({ id: invId, client: cid, desc: 'Prepaid Support Block ' + size, amount: size * BLOCK_PRICE[size], issued: TODAY, due: '2026-12-07', paid: null });
+      state.data.ledger.unshift({ ts: '11-07 ' + nowish(), block: id, client: cid, delta: 0, memo: 'Block invoiced · ' + invId + ' · hours pending payment' });
+      state.data.qbo.unshift({ id: invId, what: 'Invoice · ' + clientOf(cid).name + ' · Prepaid Support Block ' + size + ' · ' + money(size * BLOCK_PRICE[size]), status: state.scenario === 'qbodown' ? 'retry' : 'synced' });
       state.data.entries.filter(e => e.status === 'held' && e.client === cid).forEach(e => { e.status = 'submitted'; delete e.hold; });
       state.confirm = null;
-      toast('Invoice sent to ' + clientOf(cid).name + ' for ' + money(size * BLOCK_PRICE[size]) + '.');
+      toast('Invoice sent to ' + clientOf(cid).name + ' for ' + money(size * BLOCK_PRICE[size]) + '. Hours unlock when it\u2019s paid.');
     }
   };
   render();
@@ -677,16 +686,16 @@ function buyBlock(cid, size) {
 function closeMonth() {
   if (state.monthClosed) return;
   state.confirm = {
-    title: 'Post October close to QuickBooks?',
+    title: 'Post November close to QuickBooks?',
     body: 'Creates one journal entry per client (Unearned Revenue → Service Revenue for hours burned) and one invoice per client for T&M, Azure backup, hardware and Q4 RMM. Nothing is sent to clients until you review the invoices in QBO.',
     ok: 'Post to QBO', onOk: () => {
       state.monthClosed = true; state.confirm = null;
       const down = state.scenario === 'qbodown';
       CLIENTS.forEach(c => {
         state.data.qbo.unshift({ id: 'JE-' + c.id.toUpperCase(), what: 'JournalEntry · ' + c.name + ' · recognize block revenue', status: down ? 'retry' : 'synced' });
-        state.data.qbo.unshift({ id: 'INV-OCT-' + c.id.toUpperCase(), what: 'Invoice · ' + c.name + ' · Oct charges', status: down ? 'retry' : 'synced' });
+        state.data.qbo.unshift({ id: 'INV-OCT-' + c.id.toUpperCase(), what: 'Invoice · ' + c.name + ' · Nov charges', status: down ? 'retry' : 'synced' });
       });
-      toast(down ? 'Posted 8 records to the QBO queue; will retry when reachable.' : 'Posted 4 journal entries and 4 invoices to QuickBooks Online.');
+      toast(down ? 'Posted 8 records to the QBO queue; will retry when reachable.' : 'Posted 4 journal entries and 4 November invoices to QuickBooks Online for review.');
     }
   };
   render();
@@ -732,6 +741,7 @@ function renderTime() {
 }
 function statusTag(e) {
   if (e.status === 'held') return '<span class="tag held">Held</span><div class="mini">' + esc(e.hold || '') + '</div>';
+  if (e.status === 'draft') return '<span class="tag draft">Draft</span><div class="mini">' + esc(e.hold || '') + '</div>';
   if (e.status === 'approved') return e.synced ? '<span class="tag synced">Synced to QBO</span>' : '<span class="tag retry">Approved · QBO retry</span>';
   return '<span class="tag ' + esc(e.status) + '">' + esc(e.status.charAt(0).toUpperCase() + e.status.slice(1)) + '</span>';
 }
@@ -745,26 +755,26 @@ function renderApprovals() {
   return '<h4>Approvals</h4><p class="sub">' + pending.length + ' waiting · ' + hrs(totalBilled) + ' billable · ' + money(totalPay) + ' pay accrues on approve · overdraft rule: <b>' + esc(policyText) + '</b> (change in Decisions below)</p>' +
     (pending.length ? '<table><thead><tr><th>Tech</th><th>Client</th><th class="hide-sm">Notes</th><th class="num">Billed</th><th class="num">Block left</th><th class="num">Pay</th><th>Status</th></tr></thead><tbody>' +
       pending.map(e => { const b = billedHours(e.dur, e.mode); const rem = sumRemaining(e.client); const short = rem < b;
-        return '<tr><td>' + esc(EMP[e.emp].name) + '</td><td>' + esc(clientOf(e.client).name) + '<div class="mini">' + esc(e.date) + ' · ' + (e.mode === 'onsite' ? 'On-site' : 'Remote') + '</div></td><td class="hide-sm">' + esc(e.note) + '</td><td class="num">' + b.toFixed(2) + '<div class="mini">from ' + e.dur.toFixed(2) + '</div></td><td class="num' + (short ? ' neg' : '') + '">' + rem.toFixed(2) + (short ? '<div class="mini">short ' + (b - rem).toFixed(2) + '</div>' : '') + '</td><td class="num">' + (EMP[e.emp].type === 'billed' ? money(b * EMP[e.emp].rate) : '—') + '</td><td>' + statusTag(e) + '</td></tr>'; }).join('') +
+        return '<tr><td>' + esc(EMP[e.emp].name) + '</td><td>' + esc(clientOf(e.client).name) + '<div class="mini">' + esc(e.date) + ' · ' + (e.mode === 'onsite' ? 'On-site' : 'Remote') + '</div></td><td class="hide-sm">' + esc(e.note) + '</td><td class="num">' + b.toFixed(2) + '<div class="mini">from ' + e.dur.toFixed(2) + '</div></td><td class="num' + (short ? ' neg' : '') + '">' + rem.toFixed(2) + (short ? '<div class="mini">short ' + (b - rem).toFixed(2) + '</div>' : '') + '</td><td class="num">' + (EMP[e.emp].type === 'billed' ? money(b * EMP[e.emp].rate) : '—') + '</td><td>' + statusTag(e) + '<div><button class="btn ghost" style="padding:1px 8px;font-size:12px" data-sendback="' + e.id + '">Send back</button></div></td></tr>'; }).join('') +
       '</tbody></table><div style="margin-top:12px;display:flex;gap:8px;align-items:center"><button class="btn primary" id="approveAll"' + (pending.every(e => e.status === 'held') ? ' disabled' : '') + '><svg class="i"><use href="#i-check"/></svg> Approve all submitted</button>' + (pending.every(e => e.status === 'held') ? '<span class="reason">All remaining entries are held — sell a block from the Portal preview or change the overdraft rule.</span>' : '') + '</div>'
       : '<div class="empty">Queue is clear. Approved entries are in Billing &amp; QBO.</div>');
 }
 
 function renderClients() {
   return '<h4>Clients</h4><p class="sub">Block balances · oldest block burns first · alert at ' + LOW_THRESHOLD + ' h</p><div class="grid2">' +
-    CLIENTS.map(c => { const bl = state.data.blocks.filter(b => b.client === c.id); const rem = sumRemaining(c.id); const tot = bl.reduce((a, b) => a + b.hours, 0);
+    CLIENTS.map(c => { const bl = state.data.blocks.filter(b => b.client === c.id); const rem = sumRemaining(c.id); const tot = bl.filter(isActive).reduce((a, b) => a + b.hours, 0);
       const cls = rem <= 0 ? 'out' : rem < LOW_THRESHOLD ? 'low' : '';
       return '<div class="card"><h5>' + esc(c.name) + '</h5><div class="kpi">' + rem.toFixed(2) + '<small>h remaining of ' + tot + '</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
-        bl.map(b => '<div class="mini">' + esc(b.id) + ' · ' + b.hours + 'h @ $' + b.rate + ' · bought ' + esc(b.bought) + ' · <b class="' + (b.remaining < 0 ? 'neg' : '') + '">' + b.remaining.toFixed(2) + ' left</b></div>').join('') +
+        bl.map(b => '<div class="mini">' + esc(b.id) + ' · ' + b.hours + 'h @ $' + b.rate + ' · ' + (isActive(b) ? 'bought ' + esc(b.bought) + ' · <b class="' + (b.remaining < 0 ? 'neg' : '') + '">' + b.remaining.toFixed(2) + ' left</b>' : '<b class="neg">pending payment (' + esc(b.invoice) + ') · 0 available</b>') + '</div>').join('') +
         (function () { const r = rmmSummary(c.id); return '<div class="mini" style="margin-top:6px">T&amp;M $' + c.tm + '/h · Azure backup ' + c.gb + ' GB · RMM ' + (c.rmm ? 'quarterly, ' + r.total + ' devices' : r.total + ' devices, not billed') + (r.failed.length ? ' · <b class="neg">' + r.failed.length + ' failing check' + (r.failed.length === 1 ? '' : 's') + '</b>' : '') + '</div>'; })() +
         (function () { const ar = arFor(c.id); return ar.past.length ? '<div class="banner bad" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span><b>Past due ' + money(ar.pastAmt) + '</b> · ' + ar.maxDays + ' days · ' + ar.past.length + ' invoice' + (ar.past.length === 1 ? '' : 's') + '</span></div>' : ar.open.length ? '<div class="mini">Open: ' + money(ar.openAmt) + ', next due ' + esc(ar.open.slice().sort((a, b) => a.due.localeCompare(b.due))[0].due) + '</div>' : '<div class="mini pos">All invoices paid</div>'; })() +
-        (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Exhausted. ' : 'Low. ') + 'Low-balance email sent to ' + esc(c.contact) + ' with 20/40 block offer.</span></div>' : '') +
+        (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '" style="margin:8px 0 0"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Block exhausted — ' : 'Running low — ') + 'low-balance email sent to ' + esc(c.contact) + ' with 20/40 block offer.</span></div>' : '') +
         '</div>'; }).join('') + '</div>';
 }
 
 function renderBilling() {
   const down = state.scenario === 'qbodown';
-  const liability = state.data.blocks.reduce((a, b) => a + Math.max(0, b.remaining) * b.rate, 0);
+  const liability = state.data.blocks.filter(isActive).reduce((a, b) => a + Math.max(0, b.remaining) * b.rate, 0);
   const accrual = Object.values(state.data.accrual).reduce((a, b) => a + b, 0);
   const retry = state.data.qbo.filter(q => q.status === 'retry').length;
   const octLines = CLIENTS.map(c => {
@@ -777,14 +787,14 @@ function renderBilling() {
   });
   return '<h4>Billing &amp; QuickBooks Online</h4><p class="sub">Reconciliation view · what the bookkeeper used to do by hand</p>' +
     (down ? '<div class="banner bad"><svg class="i"><use href="#i-warn"/></svg><span><b>QuickBooks Online unreachable since 15:40.</b> ' + retry + ' record' + (retry === 1 ? '' : 's') + ' queued; retrying every 15 min. Approvals and balances keep working; nothing is lost.</span></div>' : (retry ? '<div class="banner warn"><svg class="i"><use href="#i-warn"/></svg><span>' + retry + ' record(s) still retrying from an earlier outage.</span></div>' : '<div class="banner ok"><svg class="i"><use href="#i-check"/></svg><span>QBO connected · last sync just now · app and QBO agree.</span></div>')) +
-    '<div class="grid2" style="margin-bottom:12px"><div class="card"><h5>Prepaid share of Oct revenue</h5><div class="kpi">61%<small>▲ from 38% in Jul</small></div><div class="mini">Revenue that arrived before the work. The point of blocks.</div></div><div class="card"><h5>Days to paid · Hours captured</h5><div class="kpi">19<small>days avg (was 41)</small> · 94%<small>of RMM-active hours logged</small></div><div class="mini">Both computed from the ledger; invented here to show the shape.</div></div></div>' +
+    '<div class="grid2 kpi3" style="margin-bottom:12px"><div class="card"><h5>Prepaid share of revenue · illustrative</h5><div class="kpi">61%<small>▲ from 38%</small></div><div class="mini">Revenue that arrived before the work.</div></div><div class="card"><h5>Days to paid · illustrative</h5><div class="kpi">19<small>was 41</small></div><div class="mini">Invoice date to payment, averaged.</div></div><div class="card"><h5>Hours captured · illustrative</h5><div class="kpi">94%<small>of RMM-active hours</small></div><div class="mini">Logged vs. activity N-sight saw.</div></div></div>' +
     '<div class="grid2"><div class="card"><h5>Block liability (Unearned Revenue)</h5><div class="kpi">' + money(liability) + '</div><div class="mini">Σ remaining hours × block rate. Must equal QBO account 2300 after month-end JE.</div></div>' +
     '<div class="card"><h5>Pay accrued this period</h5><div class="kpi">' + money(accrual) + '</div><div class="mini">' + Object.keys(state.data.accrual).map(k => esc(EMP[k].name) + ' ' + money(state.data.accrual[k])).join(' · ') + '. Flows to QBO Payroll as TimeActivity hours × employee rate.</div></div></div>' +
     '<div class="banner info" style="margin-top:14px"><svg class="i"><use href="#i-sync"/></svg><span><b>N-sight sync ' + RMM_SYNC + ':</b> ' + CLIENTS.reduce((a, c) => a + rmmSummary(c.id).total, 0) + ' devices across ' + CLIENTS.length + ' clients · ' + CLIENTS.filter(c => !c.rmm && rmmSummary(c.id).total).map(c => esc(c.name)).join(', ') + ' have monitored devices but no RMM line — check.</span></div>' +
-    '<h3 style="margin-top:18px">October close</h3>' +
+    '<h3 style="margin-top:18px">Month-end close · November (preview)</h3>' +
     '<table><thead><tr><th>Client</th><th>Invoice lines (non-block)</th><th class="num">Invoice</th></tr></thead><tbody>' +
     octLines.map(o => '<tr><td>' + esc(o.c.name) + '</td><td>' + o.lines.map(l => esc(l[0]) + ' — ' + money(l[1])).join('<br>') + '</td><td class="num">' + money(o.total) + '</td></tr>').join('') +
-    '</tbody></table><div style="margin-top:10px;display:flex;gap:8px;align-items:center"><button class="btn primary" id="closeMonth"' + (state.monthClosed ? ' disabled' : '') + '><svg class="i"><use href="#i-sync"/></svg> Post October to QBO</button>' + (state.monthClosed ? '<span class="reason">Posted. Reopen by resetting data.</span>' : '<span class="reason">Also posts the Unearned → Revenue journal entry per client.</span>') + '</div>' +
+    '</tbody></table><div style="margin-top:10px;display:flex;gap:8px;align-items:center"><button class="btn primary" id="closeMonth"' + (state.monthClosed ? ' disabled' : '') + '><svg class="i"><use href="#i-sync"/></svg> Post November to QBO</button>' + (state.monthClosed ? '<span class="reason">Posted. Reopen by resetting data.</span>' : '<span class="reason">Also posts the Unearned → Revenue journal entry per client.</span>') + '</div>' +
     '<h3 style="margin-top:18px">QBO sync log</h3><table class="ledger"><tbody>' + state.data.qbo.slice(0, 8).map(q => '<tr><td>' + esc(q.id) + '</td><td>' + esc(q.what) + '</td><td><span class="tag ' + (q.status === 'synced' ? 'synced' : 'retry') + '">' + (q.status === 'synced' ? 'Synced' : 'Retry') + '</span></td></tr>').join('') + '</tbody></table>' +
     '<h3 style="margin-top:18px">Block ledger (immutable)</h3><table class="ledger"><tbody>' + state.data.ledger.slice(0, 8).map(l => '<tr><td>' + esc(l.ts) + '</td><td>' + esc(l.block) + '</td><td>' + esc(clientOf(l.client).name) + '</td><td class="num ' + (l.delta < 0 ? 'neg' : 'pos') + '">' + (l.delta > 0 ? '+' : '') + l.delta.toFixed(2) + '</td><td>' + esc(l.memo) + '</td></tr>').join('') + '</tbody></table>';
 }
@@ -792,7 +802,7 @@ function renderBilling() {
 function renderPortal() {
   const c = clientOf(state.client);
   const bl = state.data.blocks.filter(b => b.client === c.id);
-  const rem = sumRemaining(c.id); const tot = bl.reduce((a, b) => a + b.hours, 0);
+  const rem = sumRemaining(c.id); const tot = bl.filter(isActive).reduce((a, b) => a + b.hours, 0);
   const cls = rem <= 0 ? 'out' : rem < LOW_THRESHOLD ? 'low' : '';
   const ent = state.data.entries.filter(e => e.client === c.id && e.status === 'approved');
   const ar = arFor(c.id);
@@ -800,13 +810,13 @@ function renderPortal() {
     (ar.past.length ? '<div class="banner bad" style="font-size:15px;padding:12px 14px"><svg class="i"><use href="#i-warn"/></svg><span><b>' + money(ar.pastAmt) + ' is past due</b> (' + ar.past.map(i => esc(i.id) + ', due ' + esc(i.due)).join('; ') + '). Pay online below or call (281) 880-6896 if something looks wrong.' + ((state.picks.pastdue || 'remind') === 'noblocks' ? ' New support blocks can\u2019t be purchased until the balance is current.' : '') + '</span></div>' : ar.open.length ? '<div class="banner info"><svg class="i"><use href="#i-doc"/></svg><span>' + money(ar.openAmt) + ' open · next payment due ' + esc(ar.open.slice().sort((a, b) => a.due.localeCompare(b.due))[0].due) + '.</span></div>' : '') +
     (rem < LOW_THRESHOLD ? '<div class="banner ' + (rem <= 0 ? 'bad' : 'warn') + '"><svg class="i"><use href="#i-warn"/></svg><span>' + (rem <= 0 ? 'Your block is used up. ' : 'You have ' + rem.toFixed(2) + ' hours left. ') + 'Buy a block below to keep your rate; otherwise time bills at $' + c.tm + '/h.</span></div>' : '') +
     '<div class="grid2"><div class="card"><h5>Hours remaining</h5><div class="kpi">' + rem.toFixed(2) + '<small>of ' + tot + ' purchased</small></div><div class="bar ' + cls + '"><div style="width:' + Math.max(0, Math.min(100, tot ? rem / tot * 100 : 0)) + '%"></div></div>' +
-    bl.map(b => '<div class="mini">' + b.hours + '-hour block · $' + b.rate + '/h · ' + b.remaining.toFixed(2) + ' left</div>').join('') + (rem <= 0 ? '<div class="mini neg" style="margin-top:4px">Without a block, work bills at $' + c.tm + '/h — a 40-hour block is $' + BLOCK_PRICE[40] + '/h.</div>' : '<div class="mini pos" style="margin-top:4px">Your block rate saves $' + (c.tm - (bl[0] ? bl[0].rate : 140)) + '/h vs. T&amp;M.</div>') + '</div>' +
+    bl.map(b => isActive(b) ? '<div class="mini">' + b.hours + '-hour block · $' + b.rate + '/h · ' + b.remaining.toFixed(2) + ' left</div>' : '<div class="mini neg">' + b.hours + '-hour block · pending — pay ' + esc(b.invoice) + ' to unlock</div>').join('') + (rem <= 0 ? '<div class="mini neg" style="margin-top:4px">Without a block, work bills at $' + c.tm + '/h — a 40-hour block is $' + BLOCK_PRICE[40] + '/h.</div>' : '<div class="mini pos" style="margin-top:4px">Your block rate saves $' + (c.tm - (bl[0] ? bl[0].rate : 140)) + '/h vs. T&amp;M.</div>') + '</div>' +
     '<div class="card"><h5>Buy another block</h5>' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? '<div class="mini neg" style="margin-top:6px">Unavailable while an invoice is past due.</div>' : '') + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn"' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? ' disabled' : '') + ' data-buy="20">20 h · $3,200 <span class="mini">($160/h)</span></button><button class="btn primary"' + (ar.past.length && (state.picks.pastdue || 'remind') === 'noblocks' ? ' disabled' : '') + ' data-buy="40">40 h · $5,600 <span class="mini">($140/h)</span></button></div><div class="mini" style="margin-top:8px">You’ll get a QuickBooks invoice with a pay-online link. Hours unlock when payment posts.</div></div></div>' +
     (function () { const r = rmmSummary(c.id); return '<div class="card" style="margin-top:16px"><h5>Your systems · monitored by Camquest RMM</h5><div style="display:flex;gap:22px;flex-wrap:wrap;align-items:baseline"><div><div class="kpi">' + r.total + '<small>devices</small></div><div class="mini">' + r.servers + ' server' + (r.servers === 1 ? '' : 's') + ', ' + r.workstations + ' workstations</div></div><div><div class="kpi" style="color:' + (r.failed.length ? 'var(--bad)' : 'var(--ok)') + '">' + (r.total - r.failed.length) + '<small>healthy</small></div><div class="mini">' + (r.failed.length ? r.failed.map(x => esc(x[0]) + ': ' + esc(x[4])).join('; ') : 'no failing checks') + '</div></div><div><div class="kpi">' + r.patched + '%<small>patched</small></div><div class="mini">Windows &amp; third-party</div></div></div><div class="mini" style="margin-top:6px">Synced from N-able N-sight ' + RMM_SYNC + '</div></div>'; })() +
     '<h3 style="margin-top:18px">Recent work</h3>' +
     (ent.length ? '<table><thead><tr><th>Date</th><th>Tech</th><th>What was done</th><th class="num">Hours</th></tr></thead><tbody>' + ent.map(e => '<tr><td>' + esc(e.date) + '</td><td>' + esc(EMP[e.emp].name) + '</td><td>' + (e.device ? '<span class="mini">' + esc(e.device) + ' · </span>' : '') + esc(e.note) + (e.tm ? ' <span class="tag tm">' + e.tm.toFixed(2) + 'h T&amp;M</span>' : '') + '</td><td class="num">' + (e.billed || 0).toFixed(2) + '</td></tr>').join('') + '</tbody></table>' : '<div class="empty">No approved work yet this period.</div>') +
     '<h3 style="margin-top:18px">Invoices</h3><table><thead><tr><th>Invoice</th><th class="hide-sm">For</th><th>Due</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>' +
-    state.data.invoices.filter(i => i.client === c.id).sort((a, b) => (a.paid ? 1 : 0) - (b.paid ? 1 : 0) || a.due.localeCompare(b.due)).map(i => { const st = invStatus(i); return '<tr' + (st.key === 'past' ? ' style="background:var(--bad-soft)"' : '') + '><td>' + esc(i.id) + '<div class="mini">' + esc(i.issued) + '</div></td><td class="hide-sm mini">' + esc(i.desc) + '</td><td>' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span>' + (i.paid ? '' : ' <button class="btn ghost" style="padding:2px 8px" data-paynow="' + esc(i.id) + '">Pay</button>') + '</td></tr>'; }).join('') + '</tbody></table>';
+    state.data.invoices.filter(i => i.client === c.id).sort((a, b) => (a.paid ? 1 : 0) - (b.paid ? 1 : 0) || a.due.localeCompare(b.due)).map(i => { const st = invStatus(i); return '<tr' + (st.key === 'past' ? ' style="background:var(--bad-soft)"' : '') + '><td>' + esc(i.id) + '<div class="mini">' + esc(i.issued) + '</div></td><td class="hide-sm mini">' + esc(i.desc) + '</td><td class="hide-sm">' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span>' + (i.paid ? '' : ' <button class="btn ghost" style="padding:2px 8px" data-paynow="' + esc(i.id) + '">Pay</button>') + '</td></tr>'; }).join('') + '</tbody></table>';
 }
 
 function renderPay() {
@@ -844,9 +854,9 @@ function renderAR() {
   return '<h4>Receivables</h4><p class="sub">As of ' + TODAY + ' · ' + money(totalOpen) + ' open · <b class="neg">' + money(totalPast) + ' past due</b> across ' + past.length + ' invoice' + (past.length === 1 ? '' : 's') + ' · policy: <b>' + esc(policyText) + '</b></p>' +
     (past.length ? '<div class="banner bad"><svg class="i"><use href="#i-warn"/></svg><span><b>' + past.length + ' past-due invoice' + (past.length === 1 ? '' : 's') + '.</b> ' + past.map(i => esc(clientOf(i.client).name) + ' ' + money(i.amount) + ' (' + invStatus(i).days + 'd)').join(' · ') + '</span></div>' : '<div class="banner ok"><svg class="i"><use href="#i-check"/></svg><span>Nothing past due.</span></div>') +
     '<div class="grid2"><div class="card"><h5>Aging</h5><table><tbody>' + Object.keys(buckets).map(k => '<tr><td>' + k + (k === 'Current' ? ' (not yet due)' : ' days past due') + '</td><td class="num' + (k !== 'Current' && buckets[k] ? ' neg' : '') + '">' + money(buckets[k]) + '</td></tr>').join('') + '</tbody></table></div>' +
-    '<div class="card"><h5>Automatic reminder schedule</h5><table><tbody><tr><td>Due in 3 days</td><td class="mini">friendly heads-up, pay link</td></tr><tr><td>Due today</td><td class="mini">pay link</td></tr><tr><td>Past due 7 days</td><td class="mini">firmer tone, copies you</td></tr><tr><td>Past due 14 days</td><td class="mini">copies you; portal banner turns red</td></tr><tr><td>Past due 30 days</td><td class="mini">asks you to call; policy action applies</td></tr></tbody></table><div class="mini" style="margin-top:6px">Runs daily at 8:00 AM Central. Stops the moment QBO reports payment. Edit the schedule and wording in Decisions.</div></div></div>' +
-    '<h3 style="margin-top:18px">Open invoices</h3><table><thead><tr><th>Invoice</th><th>Client</th><th class="hide-sm">For</th><th>Due</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>' +
-    open.map(i => { const st = invStatus(i); return '<tr><td>' + esc(i.id) + '</td><td>' + esc(clientOf(i.client).name) + '</td><td class="hide-sm mini">' + esc(i.desc) + '</td><td>' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span></td><td style="white-space:nowrap"><button class="btn ghost" data-remind="' + esc(i.id) + '">Remind now</button> <button class="btn ghost" data-paid="' + esc(i.id) + '">Record payment</button></td></tr>'; }).join('') + '</tbody></table>' +
+    '<div class="card"><h5>Automatic reminder schedule</h5><table><tbody><tr><td>Due in 3 days</td><td class="mini">friendly heads-up, pay link</td></tr><tr><td>Due today</td><td class="mini">pay link</td></tr><tr><td>Past due 7 days</td><td class="mini">firmer tone, copies the owner</td></tr><tr><td>Past due 14 days</td><td class="mini">owner prompted to call</td></tr><tr><td>Past due 30 days</td><td class="mini">past-due policy applies</td></tr></tbody></table><div class="mini" style="margin-top:6px">Runs daily at 8:00 AM Central. The portal shows past-due from day one; reminders stop the moment QuickBooks reports payment.</div></div></div>' +
+    '<h3 style="margin-top:18px">Open invoices</h3><table><thead><tr><th>Invoice</th><th>Client</th><th class="hide-sm">For</th><th class="hide-sm">Due</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>' +
+    open.map(i => { const st = invStatus(i); return '<tr><td>' + esc(i.id) + '</td><td>' + esc(clientOf(i.client).name) + '</td><td class="hide-sm mini">' + esc(i.desc) + '</td><td class="hide-sm">' + esc(i.due) + '</td><td class="num">' + money(i.amount) + '</td><td><span class="tag ' + st.cls + '">' + esc(st.label) + '</span></td><td style="white-space:nowrap"><button class="btn ghost" data-remind="' + esc(i.id) + '">Remind now</button> <button class="btn ghost" data-paid="' + esc(i.id) + '">Record payment</button></td></tr>'; }).join('') + '</tbody></table>' +
     '<h3 style="margin-top:18px">Reminder history</h3><table class="ledger"><tbody>' + state.data.reminders.slice(0, 8).map(r => '<tr><td>' + esc(r.ts) + '</td><td>' + esc(clientOf(r.client).name) + '</td><td>' + esc(r.inv) + '</td><td>' + esc(r.kind) + '</td><td class="mini">→ ' + esc(r.to) + '</td></tr>').join('') + '</tbody></table>';
 }
 
@@ -854,7 +864,7 @@ function renderAR() {
 function render() {
   const views = viewsFor();
   if (!views.some(v => v[0] === state.view)) state.view = views[0][0];
-  const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Admin' : ' · Tech');
+  const who = state.role === 'client' ? clientOf(state.client).contact + ' · ' + clientOf(state.client).name : EMP[state.role].name + (isAdmin() ? ' · Owner console' : ' · Tech');
   const pendingCount = state.data.entries.filter(e => e.status === 'submitted' || e.status === 'held').length;
   const pastDueCount = state.data.invoices.filter(i => invStatus(i).key === 'past').length;
   const content = { time: renderTime, pay: renderPay, ar: renderAR, approvals: renderApprovals, clients: renderClients, billing: renderBilling, portal: renderPortal }[state.view]();
@@ -863,7 +873,7 @@ function render() {
     (state.menuOpen ? '<div class="menu" role="menu"><button role="menuitem" id="menuSwitch">Switch role (use control above)</button><button role="menuitem" id="menuOut">Sign out</button></div>' : '') + '</span></div>' +
     '<div class="body"><nav class="sidenav" aria-label="App">' + views.map(v => '<button data-view="' + v[0] + '" aria-current="' + (state.view === v[0] ? 'page' : 'false') + '"><svg class="i"><use href="#' + v[2] + '"/></svg>' + esc(v[1]) + (v[0] === 'approvals' && pendingCount ? '<span class="badge">' + pendingCount + '</span>' : '') + (v[0] === 'ar' && pastDueCount ? '<span class="badge" style="background:var(--bad)">' + pastDueCount + '</span>' : '') + '</button>').join('') + '</nav>' +
     '<div class="main">' + content + '</div></div>';
-  if (state.toast) html += '<div class="toast" role="status">' + esc(state.toast) + '</div>';
+  if (state.toast) html += '<div class="toast" role="status" aria-live="polite">' + esc(state.toast) + '</div>';
   if (state.confirm) html += '<div class="scrim" id="scrim"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgT"><h5 id="dlgT">' + esc(state.confirm.title) + '</h5><p>' + esc(state.confirm.body) + '</p><div class="row"><button class="btn" id="dlgCancel">Cancel</button><button class="btn primary" id="dlgOk">' + esc(state.confirm.ok) + '</button></div></div></div>';
   document.getElementById('frame').innerHTML = html;
 
@@ -915,6 +925,7 @@ function wire() {
   if ($('approveAll')) $('approveAll').onclick = approveAll;
   if ($('closeMonth')) $('closeMonth').onclick = closeMonth;
   document.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => buyBlock(state.client, parseInt(b.dataset.buy, 10)));
+  document.querySelectorAll('[data-sendback]').forEach(b => b.onclick = () => sendBack(state.data.entries.find(e => e.id === +b.dataset.sendback)));
   document.querySelectorAll('[data-remind]').forEach(b => b.onclick = () => sendReminder(state.data.invoices.find(i => i.id === b.dataset.remind)));
   document.querySelectorAll('[data-paid],[data-paynow]').forEach(b => b.onclick = () => markPaid(state.data.invoices.find(i => i.id === (b.dataset.paid || b.dataset.paynow))));
   if ($('dlgCancel')) $('dlgCancel').onclick = () => { state.confirm = null; render(); };

@@ -20,7 +20,7 @@
   --bg: #f7f7f5; --panel: #ffffff; --panel-2: #f2f1ee;
   --ink: #1c1c1a; --ink-2: #3b3a36; --muted: #5f5e59;
   --line: #e4e2de; --line-strong: #cfccc6;
-  --accent: #b07d14; --accent-hover: #93660d; --accent-soft: #fbf1dc; --gold: #e0a028;
+  --accent: #8a6210; --accent-hover: #6f4e0b; --accent-soft: #fbf1dc; --gold: #e0a028;
   --ok: #1d7646; --ok-soft: #e2f2e8; --warn: #8a5a00; --warn-soft: #fbf0d6;
   --bad: #b3261e; --bad-soft: #fbe8e6; --info: #2563a8; --info-soft: #dde9f7;
   --shadow: 0 10px 30px rgba(20,18,14,.14), 0 2px 6px rgba(20,18,14,.08);
@@ -43,7 +43,7 @@ a { color: var(--accent); }
 .pillnav a:hover { border-color: var(--accent); color: var(--accent); }
 .pillnav a.ext { background: var(--ink); color: #fff; border-color: var(--ink); }
 .pillnav .sp { flex: 1; }
-h2 { font-size: 24px; margin: 48px 0 6px; font-weight: 650; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+h2 { font-size: 24px; margin: 48px 0 6px; font-weight: 650; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; scroll-margin-top: 64px; }
 h2 .v { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 10px; }
 h2 .theme { font-size: 14px; color: var(--muted); font-weight: 400; }
 .lede { color: var(--ink-2); max-width: 780px; margin: 0 0 14px; }
@@ -88,7 +88,7 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
 </div></div>
 <nav class="pillnav"><div class="in">
   <a href="#v1">v1 · Core</a><a href="#v2">v2 · Capture</a><a href="#v3">v3 · Connect</a><a href="#v4">v4 · Revenue</a><a href="#v5">v5 · Intelligence</a><a href="#v6">v6 · Scale</a>
-  <span class="sp"></span><a href="../presentation/" class="ext">Proposal ↗</a><a href="../mockup/" class="ext">Mockup ↗</a>
+  <span class="sp"></span><a href="../mockup/" class="ext">← Mockup</a><a href="../presentation/#s13" class="ext">Decisions →</a>
 </div></nav>
 
 <div class="wrap">
@@ -109,7 +109,7 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
     <li>Client portal: hours, health panel, work history, invoices, pay online, buy a block</li>
     <li>N-sight nightly sync: device picker, failing-check nudges, portal health, RMM counts</li>
     <li>Reconciliation gate, audit log, sales-tax tagging, Entra sign-in, nightly backups, CSV export</li>
-    <li>Everything Tami does by hand today — hounding techs, keying pay and block deductions, entering QuickBooks, collecting — handled by the system so her role can retire with her</li>
+    <li>Everything Tami does by hand today — chasing techs for hours, keying pay and block deductions, entering QuickBooks, collecting — handled by the system so her role can retire with her</li>
     <li>Block terms clients accept in the portal — no expiry, T&amp;M after exhaustion, minimums, payment terms — so the rules are agreed, not assumed</li>
     <li>Runbook and documentation a future buyer would expect in due diligence</li>
   </ul></div>
@@ -117,7 +117,7 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
   <h2 id="v2"><span class="v">v2</span> Capture &amp; communication <span class="theme">— make time entry disappear, make clients feel informed</span></h2>
   <p class="lede">The fastest payback after v1: more hours captured from techs, fewer reasons for clients to delay paying.</p>
   <div class="grid">
-    <div class="card"><h3>Teams / text time entry</h3><p>Techs keep sending time the way they do today — a Teams message or SMS like "Bayou 1.5 remote, fixed scanner." The app parses it into a draft entry; the tech taps confirm. No new app to open.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">Claude API · Teams bot</span></div></div>
+    <div class="card"><h3>Teams / text time entry</h3><p>Techs keep sending time the way they do today — a Teams message or text like "Bayou 1.5 remote, fixed scanner." The app turns it into a draft entry; the tech taps confirm. No new app to open.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">Claude API · Teams bot</span></div></div>
     <div class="card"><h3>Weekly client digest</h3><p>Friday email per client: hours used this week, what was done, hours remaining, next invoice due. Kills most disputes before they start and quietly sells the next block.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
     <div class="card"><h3>Burn forecast &amp; renewal nudge</h3><p>"Gulf Coast runs out ~Dec 12 at current pace." Shown to the owner and, at the threshold, sent to the client with the 20/40 offer. Nobody finds out at zero.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
     <div class="card"><h3>Request intake in the portal</h3><p>Not a ticketing system — a form: what's wrong, how urgent. Becomes a draft entry the tech picks up, so every entry has a reference the client recognizes.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
@@ -142,8 +142,7 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
     <div class="card"><h3>Project work with milestones</h3><p>Migrations and website builds as fixed-price projects: deposit, progress, final. Distinct from blocks so techs don't log project time against a client's prepaid hours.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span></div></div>
     <div class="card"><h3>Renewals tracker</h3><p>Domains, SSL, hosting plans with dates → auto-invoice 30 days out → the existing reminder cadence. Lapsed domains are how small IT shops lose clients.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
     <div class="card"><h3>VoIP per-seat pass-through</h3><p>Monthly line per client from the VoIP provider's seat count.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span><span class="tag dep">Provider API or monthly import</span></div></div>
-    <div class="card"><h3>Rate escalators</h3><p>Block, T&amp;M and pay rates with effective dates. A January price change is one row; old blocks keep their rate.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
-    <div class="card"><h3>Quote → block / hardware with e-sign</h3><p>Portal quotes the client accepts in one click; acceptance creates the QBO invoice. Worth it once block and hardware sales are frequent.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Medium effort</span></div></div>
+        <div class="card"><h3>Quote → block / hardware with e-sign</h3><p>Portal quotes the client accepts in one click; acceptance creates the QBO invoice. Worth it once block and hardware sales are frequent.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Medium effort</span></div></div>
     <div class="card"><h3>Buyer-ready reporting</h3><p>Recurring prepaid revenue, client concentration, churn, margin by service line — the numbers an acquirer asks for first, computed from the ledger rather than assembled for a sale.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
     <div class="card"><h3>CPA year-end pack</h3><p>One button: block liability roll-forward, revenue recognized by month, open AR, sales tax collected by item.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
   </div>
@@ -170,7 +169,7 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
   </div>
   <p class="legend">Value and effort are relative judgments to help ordering, not estimates. Dependencies name what has to exist first.</p>
 
-  <div class="nextcard"><div><b>That’s the whole proposal.</b><span>Questions, or ready to pick the decisions? Drew Campbell · dcampbell@cqsys.com · (281) 880-6896</span></div><a class="alt" href="../presentation/#s12">Back to the decisions</a><a href="../">Start over</a></div>
+  <div class="nextcard"><div><b>That’s the whole proposal.</b><span>Questions, or ready to pick the decisions? Drew Campbell · dcampbell@cqsys.com · (281) 880-6896</span></div><a class="alt" href="../presentation/#s13">Back to the decisions</a><a href="../">Start over</a></div>
   <footer>Camquest Systems, LLC · Time &amp; Billing roadmap · November 2026 · Companion to the <a href="../presentation/">proposal</a> and the <a href="../mockup/">working mockup</a>.</footer>
 <script>try { const j = JSON.parse(localStorage.getItem('cq-journey') || '{}'); j['possibilities'] = true; localStorage.setItem('cq-journey', JSON.stringify(j)); } catch (e) {}
 </script>

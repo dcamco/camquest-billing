@@ -42,7 +42,7 @@ function flow(host) {
     const entry = k === 0 ? 'Rick · Westheimer Dental<br><b>0.40 h</b> on-site · "replaced front-desk printer"' : 'Rick · Westheimer Dental<br><b>1.00 h</b> billed <span class="cq-dim">(0.40 → 0.50 → on-site min 1.00)</span>';
     const block = k < 3 ? '<b>11.75 h</b> left of 20 @ $160' : '<b>10.75 h</b> left <span class="cq-delta cq-neg">−1.00</span>';
     const pay = k < 3 ? 'Rick · $50/h<br><b>$0.00</b> this period' : 'Rick · $50/h<br><b>$50.00</b> <span class="cq-delta cq-pos">+$50.00</span>';
-    const qbo = k < 3 ? 'TimeActivity<br><span class="cq-dim">waiting</span>' : k === 3 ? 'TimeActivity<br><b>synced</b> · Rick · 1.0h · billable' : 'JournalEntry<br><b>Unearned −$160 → Revenue +$160</b>';
+    const qbo = k < 3 ? 'Payroll hours<br><span class="cq-dim">nothing sent yet</span>' : k === 3 ? 'Payroll hours<br><b>sent</b> · Rick · 1.0 h · billable' : 'Month-end entry<br><b>$160 moves from prepaid to earned</b>';
     const barW = k < 3 ? 58.75 : 53.75;
     return '<div class="cq-flow">' +
       node('a', 'Time entry', entry, k === 0 ? 'active' : k === 1 ? 'active' : 'done') +
@@ -54,7 +54,7 @@ function flow(host) {
         node('d', 'Tech pay accrual', pay, k === 3 ? 'active' : k > 3 ? 'done' : '') +
         node('e', 'QuickBooks Online', qbo, k >= 3 ? 'active' : '') +
       '</div></div>' +
-      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval writes three immutable postings: the client’s block drops 1.00 h, Rick accrues $50, and a TimeActivity goes to QBO for payroll.', 'At month end the app moves 1.00 h × $160 from Unearned Revenue to Service Revenue — the bookkeeping that used to be done by hand.'][k] + '</p>';
+      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval does three things at once: the client’s block drops 1.00 h, Rick earns $50, and the hours go to QuickBooks for payroll.', 'At month end the app tells QuickBooks that 1.00 h × $160 of prepaid money has now been earned — the entry Tami used to make by hand.'][k] + '</p>';
   }, { interval: 2200 });
 }
 
@@ -64,13 +64,13 @@ function dunning(host) {
   const pts = [0, 60, 70, 82, 94, 100];
   const marks = [['Issued', 0], ['Due', 70], ['+7', 82], ['+14', 94], ['+30', 100]];
   return player(host, steps, k => {
-    const mails = [null, 'Friendly heads-up with pay link', 'Pay link · due today', 'Firmer tone · copy to Drew', 'Copy to Drew · portal banner turns red', null];
+    const mails = [null, 'Friendly heads-up with pay link', 'Pay link · due today', 'Firmer tone · owner copied', 'Owner prompted to call', null];
     const status = ['Open · Net 30', 'Due soon', 'Due today', 'Past due 7 days', 'Past due 14 days', 'Paid · reminders stopped'][k];
     const cls = k === 5 ? 'ok' : k >= 3 ? 'bad' : k >= 1 ? 'warn' : 'info';
     return '<div class="cq-dun"><div class="cq-inv"><div class="cq-nt">INV-1031 · Bayou Title Co. · $499.44</div><span class="cq-pill cq-' + cls + '">' + status + '</span></div>' +
       '<div class="cq-timeline"><div class="cq-tl-fill" style="width:' + pts[k] + '%"></div>' + marks.map(m => '<div class="cq-tl-mark" style="left:' + m[1] + '%"><i></i><span>' + m[0] + '</span></div>').join('') + '<div class="cq-tl-dot" style="left:' + pts[k] + '%"></div></div>' +
-      '<div class="cq-mail' + (mails[k] ? ' on' : '') + '">' + (mails[k] ? '✉ ' + esc(mails[k]) + ' → Janet R.' : (k === 5 ? '✓ QuickBooks reports payment · app stops reminders · block hours unlock' : '&nbsp;')) + '</div>' +
-      '<p class="cq-cap">' + ['The invoice goes out from QuickBooks with a pay-online link. The app knows the due date.', 'Three days before the due date the client gets a gentle nudge. No human involved.', 'On the due date, another. Still automatic.', 'A week past due the tone firms up and Drew is copied. The portal shows it in red.', 'At two weeks Drew is prompted to call. If the policy says so, new block sales pause.', 'The moment QBO reports payment, reminders stop and the client’s portal goes green. Nothing to mark by hand.'][k] + '</p></div>';
+      '<div class="cq-mail' + (mails[k] ? ' on' : '') + (k === 5 ? ' ok' : '') + '">' + (mails[k] ? '✉ ' + esc(mails[k]) + ' → Janet R.' : (k === 5 ? '✓ QuickBooks reports payment · reminders stop · portal turns green' : '&nbsp;')) + '</div>' +
+      '<p class="cq-cap">' + ['The invoice goes out from QuickBooks with a pay-online link. The app knows the due date.', 'Three days before the due date the client gets a gentle nudge. No human involved.', 'On the due date, another. Still automatic.', 'A week past due the tone firms up and the owner is copied. The portal has shown it in red since day one.', 'At two weeks the owner is prompted to make the one call that’s still human. At thirty days the past-due policy applies.', 'The moment QuickBooks reports payment, reminders stop and the client’s portal goes green. Nothing to mark by hand.'][k] + '</p></div>';
   }, { interval: 2000 });
 }
 
@@ -86,7 +86,7 @@ function sync(host) {
       src('QuickBooks Online', 'Open invoices · payments posted', k === 2, k > 2) +
       '</div><div class="cq-core' + (k >= 3 ? ' on' : '') + '"><div class="cq-nt">Camquest ledger</div><div class="cq-nb">' + (k < 3 ? 'receiving…' : k === 3 ? 'reconciling' : 'reconciled · suggestions drafted') + '</div>' + checks + '</div>' +
       '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Drew’s Monday digest</div></div></div>' +
-      '<p class="cq-cap">' + ['Every night the app pulls device lists and failing checks from N-sight — read-only, paced under its rate limit.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
+      '<p class="cq-cap">' + ['Every night the app pulls the device list and any failing checks from N-sight — read-only, at the pace N-able allows.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
   }, { interval: 2000 });
 }
 
@@ -127,6 +127,9 @@ const css = `
 .cq-tl-dot{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--ink,#1c1c1a);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transform:translate(-50%,-50%);transition:left .6s}
 .cq-mail{border:1px dashed var(--line-strong,#cfccc6);border-radius:8px;padding:8px 12px;font-size:13.5px;color:var(--muted,#5f5e59);transition:all .25s;min-height:38px}
 .cq-mail.on{border-style:solid;border-color:var(--accent,#b07d14);background:var(--accent-soft,#fbf1dc);color:var(--ink,#1c1c1a)}
+.cq-mail.ok{border-style:solid;border-color:var(--ok,#1d7646);background:var(--ok-soft,#e2f2e8);color:var(--ok,#1d7646);font-weight:600}
+.cq-mail.ok{border-style:solid;border-color:var(--ok,#1d7646);background:var(--ok-soft,#e2f2e8);color:var(--ok,#1d7646);font-weight:600}
+.cq-mail.ok{border-style:solid;border-color:var(--ok,#1d7646);background:var(--ok-soft,#e2f2e8);color:var(--ok,#1d7646);font-weight:600}
 .cq-sync{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:12px;align-items:start}
 .cq-srcs{display:grid;gap:8px}
 .cq-src{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--panel-2,#f2f1ee);transition:all .25s;opacity:.7}
@@ -139,7 +142,7 @@ const css = `
 .cq-outs{display:grid;gap:8px;opacity:.35;transition:opacity .25s}
 .cq-outs.on{opacity:1}
 .cq-outs div{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--accent-soft,#fbf1dc)}
-@media (max-width:760px){.cq-flow{grid-template-columns:1fr;gap:6px}.cq-arrow,.cq-fan{transform:rotate(90deg);height:24px;display:flex;align-items:center;justify-content:center}.cq-fan{gap:6px;grid-auto-flow:column}.cq-sync{grid-template-columns:1fr}.cq-outs{grid-auto-flow:column}}
+@media (max-width:760px){.cq-flow{grid-template-columns:1fr;gap:6px}.cq-arrow,.cq-fan{transform:rotate(90deg);height:24px;display:flex;align-items:center;justify-content:center}.cq-fan span:not(:first-child){display:none}.cq-sync{grid-template-columns:1fr}.cq-outs{grid-auto-flow:column}}
 @media (prefers-reduced-motion:reduce){.cq-node,.cq-track>div,.cq-tl-fill,.cq-tl-dot,.cq-mail,.cq-src,.cq-core,.cq-outs{transition:none}}
 `;
 const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);

@@ -20,7 +20,7 @@
   --bg: #f7f7f5; --panel: #ffffff; --panel-2: #f2f1ee;
   --ink: #1c1c1a; --ink-2: #3b3a36; --muted: #5f5e59;
   --line: #e4e2de; --line-strong: #cfccc6;
-  --accent: #b07d14; --accent-hover: #93660d; --accent-soft: #fbf1dc; --gold: #e0a028;
+  --accent: #8a6210; --accent-hover: #6f4e0b; --accent-soft: #fbf1dc; --gold: #e0a028;
   --ok: #1d7646; --shadow: 0 10px 30px rgba(20,18,14,.14), 0 2px 6px rgba(20,18,14,.08);
   --font: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
 }
@@ -37,6 +37,7 @@ h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.05; margin: 0 0 16px; fon
 .cta { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; background: var(--accent); color: #fff; border-radius: 12px; padding: 14px 22px; font-weight: 650; font-size: 17px; }
 .cta:hover { background: var(--accent-hover); }
 .cta small { font-weight: 400; opacity: .85; font-size: 13px; }
+@media (max-width: 480px) { .cta { flex-direction: column; align-items: flex-start; gap: 2px; } }
 .byline { color: #9c9a94; font-size: 14px; margin-top: 22px; }
 .steps { padding: 36px 24px 56px; }
 .steps h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 14px; font-weight: 650; }
@@ -50,7 +51,7 @@ h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.05; margin: 0 0 16px; fon
 .step .go { color: var(--accent); font-weight: 650; font-size: 14px; }
 .step.done::after { content: "Viewed ✓"; position: absolute; top: 14px; right: 16px; font-size: 12px; color: var(--ok); background: #e2f2e8; border-radius: 999px; padding: 2px 9px; }
 .why { padding: 0 24px 56px; }
-.why .in { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.why .in { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
 .why div { border-left: 3px solid var(--accent); padding: 4px 14px; font-size: 15px; }
 .why b { display: block; margin-bottom: 2px; }
 footer { padding: 0 24px 48px; color: var(--muted); font-size: 13.5px; }
@@ -63,7 +64,7 @@ footer .in { border-top: 1px solid var(--line); padding-top: 16px; }
   <div class="logo">CAM<span>QUEST</span> · TIME &amp; BILLING</div>
   <div class="k">A proposal for Camquest Systems</div>
   <h1>Get paid up front. Capture every hour. Stop chasing.</h1>
-  <p class="lede">Camquest sells discounted blocks of support hours that are meant to be prepaid. In practice, techs don’t always enter their time, so work goes out free — and clients drift onto time-and-materials, paying in chunks at the end after being hounded. This proposal is a system that removes both frictions and keeps cash flowing: blocks that only exist once they’re paid, time entry that takes thirty seconds on a phone, and reminders that run themselves. It also takes over everything Tami does by hand today — so she can retire — and leaves behind a documented, automated business that a future buyer would value.</p>
+  <p class="lede">Camquest sells discounted blocks of support hours that are meant to be prepaid. In practice, techs don’t always enter their time, so work goes out free — and clients drift onto time-and-materials, paying in chunks at the end after repeated follow-up. This proposal is a system that removes both frictions and keeps cash flowing: blocks that only exist once they’re paid, time entry that takes thirty seconds on a phone, and reminders that run themselves. It also takes over everything Tami does by hand today — so she can retire — and leaves behind a documented, automated business that a future buyer would value.</p>
   <a class="cta" href="presentation/">Start with the proposal <small>· about 8 minutes</small> →</a>
   <div class="byline">Prepared by Drew Campbell · dcampbell@cqsys.com · November 2026</div>
 </div></section>
@@ -81,7 +82,7 @@ footer .in { border-top: 1px solid var(--line); padding-top: 16px; }
   <div><b>Paid first, by design</b>Block hours unlock when the payment posts. Work without a paid block bills at T&amp;M. The discount is the reward for paying up front.</div>
   <div><b>Every hour captured</b>Techs are paid per quarter hour billed, so unlogged time is unpaid time — and the app makes logging the easiest part of the day, including a nudge when RMM saw work happen.</div>
   <div><b>Nobody chases</b>Due dates are visible to the client and the owner at the same moment; reminders run daily and stop the instant QuickBooks reports payment.</div>
-  <div><b>Books close themselves</b>Approvals post to QuickBooks Online automatically; payroll and direct deposit work as today. Tami’s role — hounding, keying, deducting, collecting — retires with her.</div>
+  <div><b>Books close themselves</b>Approvals post to QuickBooks Online automatically; payroll and direct deposit work as today. Tami’s role — chasing hours, keying, deducting, collecting — retires with her.</div>
   <div><b>Built to be sold one day</b>Clean, reconciled books, recurring prepaid revenue, and a runbook instead of a person. The things a buyer asks for first.</div>
 </div></section>
 
