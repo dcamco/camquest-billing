@@ -54,17 +54,31 @@ h2 .theme { font-size: 14px; color: var(--muted); font-weight: 400; }
 .legend { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
 footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
 @media (max-width: 760px) { .hero h1 { font-size: 26px; } .v1 ul { columns: 1; } .wrap { padding: 0 14px 56px; } .pillnav .in { padding: 10px 14px; } }
+.journey { background: var(--accent-soft); border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.journey .in { max-width: 1120px; margin: 0 auto; padding: 8px 24px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.journey .steps { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.journey .steps span { padding: 2px 9px; border-radius: 999px; }
+.journey .steps span.cur { background: var(--ink); color: #fff; }
+.journey .steps a { color: var(--muted); text-decoration: none; padding: 2px 9px; }
+.journey .next { margin-left: auto; color: var(--accent); font-weight: 650; text-decoration: none; }
+.nextcard { margin: 40px auto 0; max-width: 1120px; background: #1c1c1a; color: #f2f1ee; border-radius: 16px; padding: 24px 26px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.nextcard b { font-size: 20px; display: block; }
+.nextcard span { color: #cfccc6; }
+.nextcard a { margin-left: auto; background: var(--accent); color: #fff; text-decoration: none; border-radius: 10px; padding: 12px 20px; font-weight: 650; white-space: nowrap; }
+.nextcard a.alt { background: transparent; border: 1px solid #5a5852; margin-left: 0; }
+@media (max-width: 700px) { .journey .next { margin-left: 0; } .nextcard a { margin-left: 0; } }
 </style>
 </head>
 <body>
+<div class="journey"><div class="in"><a href="../" style="color:var(--ink);text-decoration:none;font-weight:650">Camquest proposal</a><div class="steps"><a href="../presentation/">1 · Proposal</a><a href="../mockup/">2 · Mockup</a><span class="cur">3 · Roadmap</span></div><a class="next" href="../">Back to start</a></div></div>
 <div class="hero"><div class="wrap">
   <div class="logo">CAM<span>QUEST</span> · TIME &amp; BILLING</div>
   <h1>Possibilities: what the system can grow into once the core is running.</h1>
-  <p>Version 1 is deliberately small — one ledger, three postings, QuickBooks and N-sight wired in. Everything below is a candidate for a later release. Each one either feeds that ledger or reads from it; nothing bypasses it.</p>
+  <p>Version 1 attacks the two frictions directly: techs not entering time (work going out free) and clients paying late instead of up front. Everything below is a candidate for later, and each item earns its place by capturing more hours or moving cash earlier — never by adding something to maintain.</p>
 </div></div>
 <nav class="pillnav"><div class="in">
   <a href="#v1">v1 · Core</a><a href="#v2">v2 · Capture</a><a href="#v3">v3 · Connect</a><a href="#v4">v4 · Revenue</a><a href="#v5">v5 · Intelligence</a><a href="#v6">v6 · Scale</a>
-  <span class="sp"></span><a href="../" class="ext">Mockup ↗</a><a href="../presentation/" class="ext">Presentation ↗</a>
+  <span class="sp"></span><a href="../presentation/" class="ext">Proposal ↗</a><a href="../mockup/" class="ext">Mockup ↗</a>
 </div></nav>
 
 <div class="wrap">
@@ -80,14 +94,17 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
     <li>Internal / non-billable time and hours-worked vs. hours-billed for payroll compliance</li>
     <li>QuickBooks Online sync: customers, block invoices, TimeActivity, month-end journal entry, payment webhook</li>
     <li>Monthly invoice run: T&amp;M, Azure backup per GB, hardware, quarterly RMM with device counts</li>
-    <li>Receivables: due / past-due everywhere, aging, automated reminder cadence</li>
+    <li>Blocks unlock only when payment posts; work without a paid block bills at T&amp;M</li>
+    <li>Receivables: due / past-due everywhere, aging, automated reminder cadence, card on file / autopay via QBO Payments</li>
     <li>Client portal: hours, health panel, work history, invoices, pay online, buy a block</li>
     <li>N-sight nightly sync: device picker, failing-check nudges, portal health, RMM counts</li>
     <li>Reconciliation gate, audit log, sales-tax tagging, Entra sign-in, nightly backups, CSV export</li>
+    <li>Everything Tami does by hand today — hounding techs, keying pay and block deductions, entering QuickBooks, collecting — handled by the system so her role can retire with her</li>
+    <li>Runbook and documentation a future buyer would expect in due diligence</li>
   </ul></div>
 
   <h2 id="v2"><span class="v">v2</span> Capture &amp; communication <span class="theme">— make time entry disappear, make clients feel informed</span></h2>
-  <p class="lede">The fastest payback after v1: more hours captured, fewer month-end questions.</p>
+  <p class="lede">The fastest payback after v1: more hours captured from techs, fewer reasons for clients to delay paying.</p>
   <div class="grid">
     <div class="card"><h3>Teams / text time entry</h3><p>Techs keep sending time the way they do today — a Teams message or SMS like "Bayou 1.5 remote, fixed scanner." The app parses it into a draft entry; the tech taps confirm. No new app to open.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">Claude API · Teams bot</span></div></div>
     <div class="card"><h3>Weekly client digest</h3><p>Friday email per client: hours used this week, what was done, hours remaining, next invoice due. Kills most disputes before they start and quietly sells the next block.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
@@ -116,6 +133,7 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
     <div class="card"><h3>VoIP per-seat pass-through</h3><p>Monthly line per client from the VoIP provider's seat count.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span><span class="tag dep">Provider API or monthly import</span></div></div>
     <div class="card"><h3>Rate escalators</h3><p>Block, T&amp;M and pay rates with effective dates. A January price change is one row; old blocks keep their rate.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
     <div class="card"><h3>Quote → block / hardware with e-sign</h3><p>Portal quotes the client accepts in one click; acceptance creates the QBO invoice. Worth it once block and hardware sales are frequent.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Medium effort</span></div></div>
+    <div class="card"><h3>Buyer-ready reporting</h3><p>Recurring prepaid revenue, client concentration, churn, margin by service line — the numbers an acquirer asks for first, computed from the ledger rather than assembled for a sale.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
     <div class="card"><h3>CPA year-end pack</h3><p>One button: block liability roll-forward, revenue recognized by month, open AR, sales tax collected by item.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
   </div>
 
@@ -141,7 +159,10 @@ footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line);
   </div>
   <p class="legend">Value and effort are relative judgments to help ordering, not estimates. Dependencies name what has to exist first.</p>
 
-  <footer>Camquest Systems, LLC · Time &amp; Billing roadmap · November 2026 · Companion to the <a href="../">working mockup</a> and the <a href="../presentation/">presentation</a>.</footer>
+  <div class="nextcard"><div><b>That’s the whole proposal.</b><span>Questions, or ready to pick the decisions? Drew Campbell · dcampbell@cqsys.com · (281) 880-6896</span></div><a class="alt" href="../presentation/#s12">Back to the decisions</a><a href="../">Start over</a></div>
+  <footer>Camquest Systems, LLC · Time &amp; Billing roadmap · November 2026 · Companion to the <a href="../presentation/">proposal</a> and the <a href="../mockup/">working mockup</a>.</footer>
+<script>try { const j = JSON.parse(localStorage.getItem('cq-journey') || '{}'); j['possibilities'] = true; localStorage.setItem('cq-journey', JSON.stringify(j)); } catch (e) {}
+</script>
 </div>
 </body>
 </html>

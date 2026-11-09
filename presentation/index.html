@@ -106,44 +106,59 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 .hint { position: fixed; right: 16px; bottom: 14px; font-size: 12px; color: var(--muted); background: rgba(247,247,245,.9); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; z-index: 25; }
 @media (max-width: 860px) { .screens { grid-template-columns: 1fr; } .int { grid-template-columns: 1fr; } .int .core { min-width: 0; } .slide { padding: 40px 16px; min-height: 0; } .hint { display: none; } .nav .in { padding: 10px 14px; } .nav .count { display: none; } }
 @media print { .nav, .hint { display: none; } .slide { min-height: 0; page-break-after: always; padding: 32px 24px; } .slide.dark { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+.journey { background: var(--accent-soft); border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.journey .in { max-width: 1120px; margin: 0 auto; padding: 8px 24px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.journey .steps { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.journey .steps span { padding: 2px 9px; border-radius: 999px; }
+.journey .steps span.cur { background: var(--ink); color: #fff; }
+.journey .steps a { color: var(--muted); text-decoration: none; padding: 2px 9px; }
+.journey .next { margin-left: auto; color: var(--accent); font-weight: 650; text-decoration: none; }
+.nextcard { margin: 40px auto 0; max-width: 1120px; background: #1c1c1a; color: #f2f1ee; border-radius: 16px; padding: 24px 26px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.nextcard b { font-size: 20px; display: block; }
+.nextcard span { color: #cfccc6; }
+.nextcard a { margin-left: auto; background: var(--accent); color: #fff; text-decoration: none; border-radius: 10px; padding: 12px 20px; font-weight: 650; white-space: nowrap; }
+.nextcard a.alt { background: transparent; border: 1px solid #5a5852; margin-left: 0; }
+@media (max-width: 700px) { .journey .next { margin-left: 0; } .nextcard a { margin-left: 0; } }
 </style>
 </head>
 <body>
+<div class="journey"><div class="in"><a href="../" style="color:var(--ink);text-decoration:none;font-weight:650">Camquest proposal</a><div class="steps"><span class="cur">1 · Proposal</span><a href="../mockup/">2 · Mockup</a><a href="../possibilities/">3 · Roadmap</a></div><a class="next" href="../mockup/">Next: try the mockup →</a></div></div>
 <nav class="nav"><div class="in">
   <div class="logo">CAM<span>QUEST</span></div>
   <div class="links">
-    <a href="#s1">Overview</a><a href="#s2">Today</a><a href="#s3">The idea</a><a href="#s4">Techs</a><a href="#s5">Clients</a><a href="#s6">Owner</a><a href="#s7">Getting paid</a><a href="#s8">Integrations</a><a href="#s9">Trust</a><a href="#s10">Roadmap</a><a href="#s11">Decisions</a><a href="#s12">Next</a>
+    <a href="#s1">Overview</a><a href="#s2">Today</a><a href="#s3">The idea</a><a href="#s4">Techs</a><a href="#s5">Clients</a><a href="#s6">Owner</a><a href="#s7">Getting paid</a><a href="#s8">Integrations</a><a href="#s9">Trust</a><a href="#s10">Measures</a><a href="#s11">Roadmap</a><a href="#s12">Decisions</a><a href="#s13">Next</a>
   </div>
-  <div class="count" id="count">1 / 12</div>
+  <div class="count" id="count">1 / 13</div>
 </div></nav>
 <div class="hint">← → to move between sections</div>
+<style>.journey{position:relative;z-index:31}</style>
 
 <section class="slide dark" id="s1"><div class="in">
   <div class="k">Proposal · November 2026</div>
-  <h1>Sell hours. Burn hours. Pay techs. Close the books — automatically.</h1>
-  <p class="lede">A time-block billing and payroll system for Camquest Systems: prepaid support blocks that deduct as techs log time, techs paid per quarter hour billed, QuickBooks Online kept in step without a bookkeeper, and a client portal that shows every hour and every invoice.</p>
-  <div class="cta"><a href="../" target="_blank" rel="noopener">Try the working mockup ↗</a><a class="alt" href="#s2">Start the walkthrough ↓</a></div>
+  <h1>Get paid up front. Capture every hour. Stop chasing.</h1>
+  <p class="lede">Two frictions drain Camquest’s cash flow: techs don’t enter their time, so work goes out the door free; and clients who were meant to prepay for a discounted block end up on time-and-materials, paying in chunks at the end after being hounded. This system removes both — blocks only exist once they’re paid, time entry becomes the easiest part of a tech’s day, and reminders run without anyone picking up the phone.</p>
+  <div class="cta"><a href="#s2">Start the walkthrough ↓</a><a class="alt" href="../mockup/">Skip to the mockup ↗</a></div>
   <div class="byline">Prepared by Drew Campbell · Camquest Systems, LLC · cqsys.com</div>
 </div></section>
 
 <section class="slide" id="s2"><div class="in">
   <div class="k">Today</div>
-  <h2>The business model is simple. The bookkeeping around it isn't.</h2>
-  <p class="lede">Clients buy 20- or 40-hour blocks. Techs send in their time. Someone subtracts it from the client, adds it to the tech's pay, and keys it all into QuickBooks Desktop — by hand, after the fact.</p>
+  <h2>The blocks were designed to be paid up front. In practice, they’ve become T&amp;M paid late.</h2>
+  <p class="lede">The discount on a 20- or 40-hour block is the reward for paying first. But today work starts before money arrives, techs send time in late or not at all, and the invoice lands weeks after the work — so the client treats it like any other bill and Camquest ends up chasing. Cash arrives in chunks, after effort, at the end.</p>
   <div class="pain">
-    <div><b>Lag</b>Clients learn their balance when someone gets around to it; techs learn their pay at payday.</div>
-    <div><b>Leakage</b>Work done at 7 AM from an RMM alert often never becomes a billed quarter hour.</div>
-    <div><b>Disputes</b>Month-end questions — "what was that 2.5 hours?" — with no notes to point at.</div>
-    <div><b>Dependency</b>One person holds the process in their head and in a spreadsheet. The goal is to retire that role.</div>
-    <div><b>Chasing</b>Past-due invoices get noticed when cash is tight, not when they go past due.</div>
-    <div><b>Desktop</b>QuickBooks Desktop can't be integrated with cleanly; QuickBooks Online can.</div>
+    <div><b>Friction 1 · Techs</b>Time isn’t entered, or is entered days later from memory. The 7 AM fix from an RMM alert never becomes a billed quarter hour. Work goes out free.</div>
+    <div><b>Friction 2 · Clients</b>Blocks meant to be prepaid slide into T&amp;M in arrears. Invoices get paid in chunks, late, after reminders that cost Camquest time and goodwill.</div>
+    <div><b>Cash flow</b>Revenue that should arrive before the work arrives after it — if it arrives. Growth is capped by how much Camquest can float.</div>
+    <div><b>Lag</b>Clients learn their balance when someone gets around to it; techs learn their pay at payday. Neither has a reason to act sooner.</div>
+    <div><b>Tami does it all, by hand</b>Hounds techs for hours, enters them for pay, deducts them from client blocks, keys everything into QuickBooks Desktop, and collects the bills. She would like to retire; the business can’t let her.</div>
+    <div><b>Not sellable as-is</b>A buyer values a business that runs on systems, documented and transferable. Today the process lives in one person’s head.</div>
   </div>
 </div></section>
 
 <section class="slide" id="s3"><div class="in">
   <div class="k">The idea</div>
   <h2>One ledger. Every approved quarter hour writes three postings at once.</h2>
-  <p class="lede">The client's block goes down, the tech's pay goes up, and QuickBooks gets the record — from a single approval. No re-keying, no spreadsheet, no drift between what the client was told and what the books say.</p>
+  <p class="lede">The client’s block goes down, the tech’s pay goes up, and QuickBooks gets the record — from a single approval. And the block only exists because it was paid for: hours unlock when the payment posts, so the discount is earned by paying first and the work is funded before it starts.</p>
   <div id="anim-flow"></div>
 </div></section>
 
@@ -151,12 +166,13 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
   <div class="k">For techs</div>
   <div class="screens">
     <div>
-      <h2>Thirty seconds on a phone. The math is shown before you submit.</h2>
+      <h2>Techs are paid per quarter hour billed — so unlogged time is unpaid time. The app makes logging the easy part.</h2>
       <ul class="clean">
-        <li>Date, client, device (pulled from N-sight), on-site or remote, what you did</li>
+        <li>Thirty seconds on a phone: date, client, device (pulled from N-sight), on-site or remote, what you did</li>
         <li>Quarter-hour rounding and the 1-hour on-site / 15-minute remote minimums applied visibly</li>
         <li>"From RMM: GULF-DC01 backup check failed and cleared — was that you?" one tap to log it</li>
-        <li><b>My pay</b>: earned this period, awaiting approval, prior deposits — no more waiting for payday to know</li>
+        <li><b>My pay</b> shows earned, pending and what’s missing — the incentive to enter time is visible every day, not discovered at payday</li>
+        <li>Friday nudge if a tech has fewer entries than their RMM activity suggests</li>
         <li>Edit until approved; a rejected entry comes back with a reason</li>
       </ul>
     </div>
@@ -183,7 +199,7 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
       <div class="body">
         <div class="red"><b>$1,280.60 is past due</b> (INV-1033, due Oct 31). Pay online below or call (281) 880-6896.</div>
         <div class="g2">
-          <div class="c"><h5>Hours remaining</h5><div class="kpi">43.25<small>of 80</small></div><div class="bar"><div></div></div><div style="font-size:11.5px;color:var(--muted)">Two 40-hour blocks @ $140/h</div></div>
+          <div class="c"><h5>Hours remaining</h5><div class="kpi">43.25<small>of 80</small></div><div class="bar"><div></div></div><div style="font-size:11.5px;color:var(--muted)">Two 40-hour blocks @ $140/h · T&amp;M would be $180/h</div></div>
           <div class="c"><h5>Your systems</h5><div class="kpi">14<small>devices · 13 healthy · 98% patched</small></div><div style="font-size:11.5px;color:var(--muted)">GULF-DC01: backup check failed 06:12</div></div>
         </div>
         <div class="c"><h5>Recent work</h5><div>Nov 4 · Robert · GULF-DC01 · Azure backup job failures, re-seeded · <b>2.25 h</b></div><div>Oct 29 · Mark · Conditional access rollout · <b>2.00 h</b></div></div>
@@ -191,13 +207,13 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
       </div>
     </div>
     <div>
-      <h2>Every hour, every device, every invoice — and a Pay button.</h2>
+      <h2>Prepaid is the cheapest way to buy Camquest — and the portal makes that obvious.</h2>
       <ul class="clean">
-        <li>Hours remaining per block, with the rate they locked in</li>
+        <li>Hours remaining per block with the rate they locked in — and, for anyone on T&amp;M, what a block would have saved them this month</li>
         <li>Work history with the tech's notes and the device it was on</li>
         <li>Live health panel from N-sight: devices, failing checks, patch status — the RMM fee made visible</li>
-        <li>Invoices with due and past-due status, pay online, buy another block in two taps</li>
-        <li>Low-balance email before they run out; weekly digest optional later</li>
+        <li>Invoices with due and past-due status, pay online, card on file for autopay, buy another block in two taps</li>
+        <li>Low-balance email before they run out, so the next block is bought before the discount lapses — not after a T&amp;M invoice surprises them</li>
       </ul>
     </div>
   </div>
@@ -205,7 +221,8 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 
 <section class="slide" id="s6"><div class="in">
   <div class="k">For the owner</div>
-  <h2>One weekly approval, one monthly close, and nothing to re-key.</h2>
+  <h2>Everything Tami does today, done by the system — leaving one weekly approval and one monthly close.</h2>
+  <p class="lede">Hounding techs → automatic nudges and pay that only exists for logged time. Deducting from blocks and entering pay → three postings on approval. Keying into QuickBooks → the sync. Collecting bills → the reminder cadence. Tami’s role retires with her, on her schedule, with nothing lost.</p>
   <div class="cols">
     <div class="card"><h3>Approvals</h3><p>Every submitted entry in one queue with billed hours, block remaining and pay effect. Approve all, or send one back with a reason. Entries that would overdraft a block are flagged by the rule you choose.</p></div>
     <div class="card"><h3>Receivables</h3><p>Aging buckets, every open invoice with its status, a red badge the moment anything goes past due, and the automatic reminder schedule running underneath.</p></div>
@@ -218,8 +235,8 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 
 <section class="slide" id="s7"><div class="in">
   <div class="k">Getting paid</div>
-  <h2>Due dates are visible everywhere, and reminders send themselves.</h2>
-  <p class="lede">Invoice status is read from QuickBooks, so nothing is marked by hand. A reminder cadence runs daily and stops the moment payment posts. The portal turns red at the same time the owner's badge does.</p>
+  <h2>Cash flow moves because paying first is the default, and nobody has to hound anyone.</h2>
+  <p class="lede">Blocks are invoiced with a pay-online link and unlock on payment. Monthly charges can go on a card on file. For everything else, a reminder cadence runs daily from the due date and stops the moment QuickBooks reports payment — the portal turns red at the same time the owner’s badge does. The owner’s phone call becomes the last step, not the first.</p>
   <div id="anim-dunning"></div>
 </div></section>
 
@@ -244,7 +261,8 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 
 <section class="slide" id="s9"><div class="in">
   <div class="k">Built to be trusted</div>
-  <h2>The core is small on purpose, and strict on purpose.</h2>
+  <h2>The core is small on purpose, strict on purpose — and built so a buyer could run it.</h2>
+  <p class="lede">A business that runs on a documented system with clean, reconciled books and recurring prepaid revenue is worth more than one that runs on a person. Every principle below is also a due-diligence answer.</p>
   <div class="princ">
     <div><b>Double-entry, append-only ledger</b>Balances are computed from immutable postings. Mistakes are reversed, never edited. Every number can be rebuilt from history.</div>
     <div><b>Whole numbers only</b>Hours stored as quarter-hours, money as cents. No rounding drift, ever.</div>
@@ -254,29 +272,44 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
     <div><b>Reconciliation as a gate</b>Ledger vs. QuickBooks vs. N-sight checked nightly; a mismatch blocks month-close until explained.</div>
     <div><b>Full audit log</b>Who approved, who changed a rate, when, before and after.</div>
     <div><b>Operational basics</b>Entra MFA, secrets in Key Vault, nightly backups with restore drills, monthly CSV export so the data is never trapped.</div>
+    <div><b>Transferable by design</b>One runbook: where it runs, how to redeploy, which keys exist, how to rotate them. A new owner or a new admin picks it up without Drew or Tami in the room.</div>
   </div>
 </div></section>
 
-<section class="slide" id="s10"><div class="in">
+<section class="slide dark" id="s10"><div class="in">
+  <div class="k">How we’ll know it’s working</div>
+  <h2>Five numbers on the owner’s screen, every morning.</h2>
+  <div class="cols">
+    <div class="card"><div class="big">Prepaid share</div><p>Percent of revenue that arrived before the work. The whole point of blocks. Goal: up every quarter.</p></div>
+    <div class="card"><div class="big">Days to paid</div><p>Average days from invoice to payment, by client. Down means the reminders and card-on-file are doing their job.</p></div>
+    <div class="card"><div class="big">Hours captured</div><p>Billed hours vs. RMM activity and hours worked. Up means techs are logging and work isn’t going out free.</p></div>
+    <div class="card"><div class="big">Work-to-invoice</div><p>Days from the work being done to it being billed. Blocks make this zero; T&amp;M should be under 30.</p></div>
+    <div class="card"><div class="big">Hours of manual bookkeeping</div><p>Tami’s weekly hours on hounding, keying and collecting. Goal: zero, with the books still reconciling every night.</p></div>
+  </div>
+  <p class="lede" style="margin-top:20px">These are computed from the ledger, not estimated. They’re the measure of whether friction actually went down — on the tech side and the client side.</p>
+</div></section>
+
+<section class="slide" id="s11"><div class="in">
   <div class="k">Roadmap</div>
   <h2>Six phases to version 1, each usable on its own.</h2>
   <div class="phases">
     <div class="phase"><span class="n">1</span><b>QuickBooks Online</b><p>Migrate from Desktop, set up Payroll Core, run one payroll in parallel.</p></div>
     <div class="phase"><span class="n">2</span><b>Ledger + time entry</b><p>Techs log time, owner approves. Works standalone alongside the bookkeeper for a month.</p></div>
     <div class="phase"><span class="n">3</span><b>QBO sync</b><p>Customers, block sales, TimeActivity, month-end entries, payroll hours.</p></div>
-    <div class="phase"><span class="n">4</span><b>Invoicing &amp; receivables</b><p>Monthly run, due/past-due, automated reminders.</p></div>
+    <div class="phase"><span class="n">4</span><b>Invoicing &amp; receivables</b><p>Monthly run, due/past-due, automated reminders, card on file.</p></div>
     <div class="phase"><span class="n">5</span><b>Portal + N-sight</b><p>Client portal, health panel, device picker, RMM device counts.</p></div>
-    <div class="phase"><span class="n">6</span><b>Reconciliation</b><p>The nightly checks and reports that let the bookkeeper role retire.</p></div>
+    <div class="phase"><span class="n">6</span><b>Reconciliation &amp; hand-off</b><p>Nightly checks, the CPA pack and the runbook — the month Tami watches the system do her job, then retires.</p></div>
   </div>
-  <p class="lede" style="margin-top:22px">After v1, growth is a menu, not a mandate: Teams/text time entry, weekly client digests, Microsoft 365 tenant signals, license resale, project billing, AI-drafted suggestions for techs. <a href="../possibilities/" target="_blank" rel="noopener">See the Possibilities roadmap ↗</a></p>
+  <p class="lede" style="margin-top:22px">After v1, growth is a menu, not a mandate: Teams/text time entry, weekly client digests, Microsoft 365 tenant signals, license resale, project billing, AI-drafted suggestions for techs. <a href="../possibilities/">See the Possibilities roadmap ↗</a></p>
 </div></section>
 
-<section class="slide gold" id="s11"><div class="in">
+<section class="slide gold" id="s12"><div class="in">
   <div class="k">Decisions we need</div>
   <h2>A handful of business rules shape the build. None are hard; all need an owner's call.</h2>
   <div class="ask">
     <div><b>When a block runs out mid-entry</b><span class="opts">Bill the overage at T&amp;M · overdraft into the next block · hold the entry until a block is sold</span></div>
     <div><b>When a client is past due</b><span class="opts">Reminders only · reminders + no new block sales · reminders + pause non-emergency support at 30 days</span></div>
+    <div><b>Work without a paid block</b><span class="opts">Bill at T&amp;M $180 (the discount is for paying first) · allow a block invoiced-but-unpaid to be used for 7 days · refuse non-emergency work</span></div>
     <div><b>Payment terms</b><span class="opts">Net 30 · Net 15 · due on receipt for blocks, Net 30 monthly</span></div>
     <div><b>RMM fee structure</b><span class="opts">Flat per client with device count shown · per device · tiered</span></div>
     <div><b>Who approves time</b><span class="opts">Drew only · Drew or Mark · auto-approve with weekly review</span></div>
@@ -287,16 +320,16 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
   <p class="lede" style="margin-top:18px">All of these can be picked by tapping in the mockup's Decisions section — the choices change how it behaves.</p>
 </div></section>
 
-<section class="slide dark" id="s12"><div class="in">
+<section class="slide dark" id="s13"><div class="in">
   <div class="k">Next steps</div>
-  <h2>Decide the rules, move to QuickBooks Online, and run phase 2 alongside the bookkeeper for one month.</h2>
+  <h2>Decide the rules, move to QuickBooks Online, and start getting paid first.</h2>
   <ul class="clean" style="margin-top:16px">
-    <li>Review the mockup and pick the decisions above</li>
+    <li>Review the mockup and pick the decisions above — especially the rule for work without a paid block</li>
     <li>Schedule the QuickBooks Desktop → Online migration and a parallel payroll run</li>
-    <li>Build phases 2–3; techs start logging in the app while the bookkeeper keeps the books for one month</li>
-    <li>Compare the two; when they match, phases 4–6 and hand-off</li>
+    <li>Build phases 2–3; techs start logging in the app while Tami keeps the books for one month</li>
+    <li>Compare the two; when they match, phases 4–6, Tami’s hand-off, and the runbook a future buyer would ask for</li>
   </ul>
-  <div class="cta"><a href="../" target="_blank" rel="noopener">Open the working mockup ↗</a><a class="alt" href="../possibilities/" target="_blank" rel="noopener">Possibilities roadmap ↗</a></div>
+  <div class="nextcard" style="margin-top:28px"><div><b>Next: try it yourself</b><span>Sign in as a tech, the owner or a client and use it — about five minutes.</span></div><a href="../mockup/">Open the mockup →</a></div>
   <div class="byline">Drew Campbell · dcampbell@cqsys.com · Camquest Systems, LLC · 21175 Tomball Parkway #175, Houston, TX 77070 · (281) 880-6896</div>
 </div></section>
 
@@ -469,6 +502,7 @@ document.addEventListener('keydown', e => {
 });
 if (window.CQAnim) { CQAnim.flow(document.getElementById('anim-flow')); CQAnim.dunning(document.getElementById('anim-dunning')); CQAnim.sync(document.getElementById('anim-sync')); }
 setCur(0);
+try { const j = JSON.parse(localStorage.getItem('cq-journey') || '{}'); j['presentation'] = true; localStorage.setItem('cq-journey', JSON.stringify(j)); } catch (e) {}
 })();
 </script>
 </body>
