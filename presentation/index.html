@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camquest Time &amp; Billing — Proposal</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f7f7f5; --panel: #ffffff; --panel-2: #f2f1ee;
+  --ink: #1c1c1a; --ink-2: #3b3a36; --muted: #5f5e59;
+  --line: #e4e2de; --line-strong: #cfccc6;
+  --accent: #b07d14; --accent-hover: #93660d; --accent-soft: #fbf1dc; --gold: #e0a028;
+  --ok: #1d7646; --ok-soft: #e2f2e8; --warn: #8a5a00; --warn-soft: #fbf0d6;
+  --bad: #b3261e; --bad-soft: #fbe8e6; --info: #2563a8; --info-soft: #dde9f7;
+  --shadow: 0 10px 30px rgba(20,18,14,.14), 0 2px 6px rgba(20,18,14,.08);
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--font); }
+a { color: var(--accent); }
+.nav { position: sticky; top: 0; z-index: 30; background: #1c1c1a; color: #f2f1ee; }
+.nav .in { max-width: 1120px; margin: 0 auto; padding: 10px 24px; display: flex; align-items: center; gap: 14px; }
+.logo { font-weight: 700; letter-spacing: .14em; font-size: 13px; white-space: nowrap; }
+.logo span { color: var(--gold); }
+.nav .links { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.nav .links::-webkit-scrollbar { display: none; }
+.nav .links a { color: #cfccc6; text-decoration: none; font-size: 12.5px; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+.nav .links a:hover, .nav .links a.cur { background: #33312d; color: #fff; }
+.nav .count { font-size: 12px; color: #9c9a94; white-space: nowrap; }
+.slide { min-height: calc(100vh - 44px); padding: 56px 24px; display: flex; align-items: center; border-bottom: 1px solid var(--line); scroll-margin-top: 44px; }
+.slide > .in { max-width: 1120px; margin: 0 auto; width: 100%; }
+.slide.dark { background: #1c1c1a; color: #f2f1ee; }
+.slide.dark .k { color: var(--gold); }
+.slide.gold { background: var(--accent-soft); }
+.k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 650; margin-bottom: 10px; }
+h1 { font-size: clamp(34px, 5vw, 58px); line-height: 1.05; margin: 0 0 18px; font-weight: 650; letter-spacing: -.02em; max-width: 900px; }
+h2 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.12; margin: 0 0 14px; font-weight: 650; letter-spacing: -.015em; max-width: 860px; }
+.lede { font-size: clamp(17px, 1.6vw, 20px); color: var(--ink-2); max-width: 760px; margin: 0 0 22px; }
+.dark .lede { color: #cfccc6; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+.dark .card { background: #26241f; border-color: #3b3934; }
+.card h3 { margin: 0 0 6px; font-size: 17px; font-weight: 650; }
+.card p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+.dark .card p { color: #cfccc6; }
+.card .big { font-size: 34px; font-weight: 650; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 6px; }
+.pain { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
+.pain div { border-left: 3px solid var(--bad); padding: 6px 14px; font-size: 15px; }
+.pain b { display: block; }
+ul.clean { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; max-width: 760px; }
+ul.clean li { padding-left: 26px; position: relative; font-size: 16px; }
+ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 700; }
+.screens { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: center; }
+.phone { border: 1px solid var(--line-strong); border-radius: 22px; background: #fff; box-shadow: var(--shadow); padding: 12px; max-width: 360px; margin: 0 auto; font-size: 13px; }
+.phone .top { background: #1c1c1a; color: #fff; border-radius: 14px 14px 0 0; padding: 10px 14px; display: flex; justify-content: space-between; font-size: 12px; }
+.phone .top b { letter-spacing: .12em; }
+.phone .top b span { color: var(--gold); }
+.phone .body { padding: 12px 10px; }
+.phone label { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 8px 0 3px; }
+.phone .f { border: 1px solid var(--line-strong); border-radius: 7px; padding: 7px 9px; background: #fff; }
+.phone .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.phone .calc { background: var(--panel-2); border-radius: 7px; padding: 7px 9px; font-family: ui-monospace, monospace; font-size: 11.5px; margin-top: 10px; }
+.phone .btn { margin-top: 10px; background: var(--accent); color: #fff; text-align: center; border-radius: 8px; padding: 9px; font-weight: 600; }
+.phone .banner { background: var(--info-soft); color: var(--info); border-radius: 7px; padding: 7px 9px; font-size: 12px; margin-bottom: 6px; }
+.portal { border: 1px solid var(--line-strong); border-radius: 14px; background: #fff; box-shadow: var(--shadow); overflow: hidden; font-size: 13px; }
+.portal .top { background: #1c1c1a; color: #fff; padding: 10px 16px; display: flex; justify-content: space-between; font-size: 12px; }
+.portal .top b { letter-spacing: .12em; } .portal .top b span { color: var(--gold); }
+.portal .body { padding: 14px 16px; display: grid; gap: 10px; }
+.portal .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.portal .c { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.portal .c h5 { margin: 0 0 4px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.portal .kpi { font-size: 24px; font-weight: 650; }
+.portal .kpi small { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 5px; }
+.portal .bar { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; margin: 6px 0 2px; }
+.portal .bar div { height: 100%; width: 54%; background: var(--ok); }
+.portal .red { background: var(--bad-soft); color: var(--bad); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; }
+.portal .pill { display: inline-block; font-size: 10.5px; border-radius: 999px; padding: 1px 7px; background: var(--ok-soft); color: var(--ok); }
+.portal .pill.bad { background: var(--bad-soft); color: var(--bad); }
+.int { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; margin-top: 10px; }
+.int .stack { display: grid; gap: 10px; }
+.int .box { border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+.int .box b { display: block; }
+.int .core { border: 2px solid var(--ink); border-radius: 16px; padding: 18px 20px; background: var(--panel); text-align: center; min-width: 200px; }
+.int .core b { display: block; font-size: 18px; }
+.int .core span { font-size: 13px; color: var(--muted); }
+.phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 16px; }
+.phase { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; position: relative; }
+.phase .n { display: inline-block; background: var(--ink); color: #fff; font-size: 11px; border-radius: 999px; padding: 1px 8px; margin-bottom: 6px; }
+.phase b { display: block; margin-bottom: 4px; }
+.phase p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+.princ { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+.princ div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+.princ b { display: block; margin-bottom: 3px; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.cta a { text-decoration: none; background: var(--accent); color: #fff; border-radius: 10px; padding: 11px 18px; font-weight: 600; }
+.cta a.alt { background: transparent; border: 1px solid var(--line-strong); color: var(--ink); }
+.dark .cta a.alt { border-color: #5a5852; color: #fff; }
+.byline { color: var(--muted); font-size: 14px; margin-top: 30px; }
+.dark .byline { color: #9c9a94; }
+.ask { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+.ask div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; }
+.ask b { display: block; margin-bottom: 4px; }
+.ask .opts { color: var(--muted); font-size: 13px; }
+.hint { position: fixed; right: 16px; bottom: 14px; font-size: 12px; color: var(--muted); background: rgba(247,247,245,.9); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; z-index: 25; }
+@media (max-width: 860px) { .screens { grid-template-columns: 1fr; } .int { grid-template-columns: 1fr; } .int .core { min-width: 0; } .slide { padding: 40px 16px; min-height: 0; } .hint { display: none; } .nav .in { padding: 10px 14px; } .nav .count { display: none; } }
+@media print { .nav, .hint { display: none; } .slide { min-height: 0; page-break-after: always; padding: 32px 24px; } .slide.dark { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<nav class="nav"><div class="in">
+  <div class="logo">CAM<span>QUEST</span></div>
+  <div class="links">
+    <a href="#s1">Overview</a><a href="#s2">Today</a><a href="#s3">The idea</a><a href="#s4">Techs</a><a href="#s5">Clients</a><a href="#s6">Owner</a><a href="#s7">Getting paid</a><a href="#s8">Integrations</a><a href="#s9">Trust</a><a href="#s10">Roadmap</a><a href="#s11">Decisions</a><a href="#s12">Next</a>
+  </div>
+  <div class="count" id="count">1 / 12</div>
+</div></nav>
+<div class="hint">← → to move between sections</div>
+
+<section class="slide dark" id="s1"><div class="in">
+  <div class="k">Proposal · November 2026</div>
+  <h1>Sell hours. Burn hours. Pay techs. Close the books — automatically.</h1>
+  <p class="lede">A time-block billing and payroll system for Camquest Systems: prepaid support blocks that deduct as techs log time, techs paid per quarter hour billed, QuickBooks Online kept in step without a bookkeeper, and a client portal that shows every hour and every invoice.</p>
+  <div class="cta"><a href="../" target="_blank" rel="noopener">Try the working mockup ↗</a><a class="alt" href="#s2">Start the walkthrough ↓</a></div>
+  <div class="byline">Prepared by Drew Campbell · Camquest Systems, LLC · cqsys.com</div>
+</div></section>
+
+<section class="slide" id="s2"><div class="in">
+  <div class="k">Today</div>
+  <h2>The business model is simple. The bookkeeping around it isn't.</h2>
+  <p class="lede">Clients buy 20- or 40-hour blocks. Techs send in their time. Someone subtracts it from the client, adds it to the tech's pay, and keys it all into QuickBooks Desktop — by hand, after the fact.</p>
+  <div class="pain">
+    <div><b>Lag</b>Clients learn their balance when someone gets around to it; techs learn their pay at payday.</div>
+    <div><b>Leakage</b>Work done at 7 AM from an RMM alert often never becomes a billed quarter hour.</div>
+    <div><b>Disputes</b>Month-end questions — "what was that 2.5 hours?" — with no notes to point at.</div>
+    <div><b>Dependency</b>One person holds the process in their head and in a spreadsheet. The goal is to retire that role.</div>
+    <div><b>Chasing</b>Past-due invoices get noticed when cash is tight, not when they go past due.</div>
+    <div><b>Desktop</b>QuickBooks Desktop can't be integrated with cleanly; QuickBooks Online can.</div>
+  </div>
+</div></section>
+
+<section class="slide" id="s3"><div class="in">
+  <div class="k">The idea</div>
+  <h2>One ledger. Every approved quarter hour writes three postings at once.</h2>
+  <p class="lede">The client's block goes down, the tech's pay goes up, and QuickBooks gets the record — from a single approval. No re-keying, no spreadsheet, no drift between what the client was told and what the books say.</p>
+  <div id="anim-flow"></div>
+</div></section>
+
+<section class="slide" id="s4"><div class="in">
+  <div class="k">For techs</div>
+  <div class="screens">
+    <div>
+      <h2>Thirty seconds on a phone. The math is shown before you submit.</h2>
+      <ul class="clean">
+        <li>Date, client, device (pulled from N-sight), on-site or remote, what you did</li>
+        <li>Quarter-hour rounding and the 1-hour on-site / 15-minute remote minimums applied visibly</li>
+        <li>"From RMM: GULF-DC01 backup check failed and cleared — was that you?" one tap to log it</li>
+        <li><b>My pay</b>: earned this period, awaiting approval, prior deposits — no more waiting for payday to know</li>
+        <li>Edit until approved; a rejected entry comes back with a reason</li>
+      </ul>
+    </div>
+    <div class="phone">
+      <div class="top"><b>CAM<span>QUEST</span></b><span>Rick · Tech</span></div>
+      <div class="body">
+        <div class="banner">From RMM: GULF-DC01 backup check failed 06:12, cleared 08:40. Log time for it?</div>
+        <div class="row"><div><label>Client</label><div class="f">Westheimer Dental</div></div><div><label>Date</label><div class="f">Nov 7, 2026</div></div></div>
+        <div class="row"><div><label>Time spent</label><div class="f">0.40 h</div></div><div><label>Where</label><div class="f">On-site</div></div></div>
+        <label>Device</label><div class="f">WD-FRONTDESK</div>
+        <label>What you did</label><div class="f">Replaced front-desk printer, drivers</div>
+        <div class="calc">billed = 1.00 h (0.40 → 0.50, on-site min 1.00) · you earn $50.00 on approval</div>
+        <div class="btn">Submit</div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide gold" id="s5"><div class="in">
+  <div class="k">For clients</div>
+  <div class="screens">
+    <div class="portal">
+      <div class="top"><b>CAM<span>QUEST</span></b><span>Tom A. · Gulf Coast Logistics</span></div>
+      <div class="body">
+        <div class="red"><b>$1,280.60 is past due</b> (INV-1033, due Oct 31). Pay online below or call (281) 880-6896.</div>
+        <div class="g2">
+          <div class="c"><h5>Hours remaining</h5><div class="kpi">43.25<small>of 80</small></div><div class="bar"><div></div></div><div style="font-size:11.5px;color:var(--muted)">Two 40-hour blocks @ $140/h</div></div>
+          <div class="c"><h5>Your systems</h5><div class="kpi">14<small>devices · 13 healthy · 98% patched</small></div><div style="font-size:11.5px;color:var(--muted)">GULF-DC01: backup check failed 06:12</div></div>
+        </div>
+        <div class="c"><h5>Recent work</h5><div>Nov 4 · Robert · GULF-DC01 · Azure backup job failures, re-seeded · <b>2.25 h</b></div><div>Oct 29 · Mark · Conditional access rollout · <b>2.00 h</b></div></div>
+        <div class="c"><h5>Invoices</h5><div>INV-1033 · $1,280.60 · <span class="pill bad">Past due 7 days</span> &nbsp; INV-1034 · $5,600.00 · <span class="pill">Due Nov 27</span></div></div>
+      </div>
+    </div>
+    <div>
+      <h2>Every hour, every device, every invoice — and a Pay button.</h2>
+      <ul class="clean">
+        <li>Hours remaining per block, with the rate they locked in</li>
+        <li>Work history with the tech's notes and the device it was on</li>
+        <li>Live health panel from N-sight: devices, failing checks, patch status — the RMM fee made visible</li>
+        <li>Invoices with due and past-due status, pay online, buy another block in two taps</li>
+        <li>Low-balance email before they run out; weekly digest optional later</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" id="s6"><div class="in">
+  <div class="k">For the owner</div>
+  <h2>One weekly approval, one monthly close, and nothing to re-key.</h2>
+  <div class="cols">
+    <div class="card"><h3>Approvals</h3><p>Every submitted entry in one queue with billed hours, block remaining and pay effect. Approve all, or send one back with a reason. Entries that would overdraft a block are flagged by the rule you choose.</p></div>
+    <div class="card"><h3>Receivables</h3><p>Aging buckets, every open invoice with its status, a red badge the moment anything goes past due, and the automatic reminder schedule running underneath.</p></div>
+    <div class="card"><h3>Billing &amp; QuickBooks</h3><p>Block liability and pay accrual at a glance. Month-end is one button: the revenue-recognition journal entries and the monthly invoices (T&amp;M, Azure backup per GB, hardware, RMM by device count) post to QBO for review.</p></div>
+    <div class="card"><h3>Payroll</h3><p>Hours already sit in QuickBooks as TimeActivity. Click Run Payroll in QBO Payroll; direct deposit works exactly as today.</p></div>
+    <div class="card"><h3>Reconciliation</h3><p>Three numbers that must match every night — block liability, receivables, approved hours — against QuickBooks. Red if they don't. This is the bookkeeper's eyeball, automated.</p></div>
+    <div class="card"><h3>Clients</h3><p>Balances, device counts, failing checks and past-due amounts per client on one screen, for you and for a tech about to walk on-site.</p></div>
+  </div>
+</div></section>
+
+<section class="slide" id="s7"><div class="in">
+  <div class="k">Getting paid</div>
+  <h2>Due dates are visible everywhere, and reminders send themselves.</h2>
+  <p class="lede">Invoice status is read from QuickBooks, so nothing is marked by hand. A reminder cadence runs daily and stops the moment payment posts. The portal turns red at the same time the owner's badge does.</p>
+  <div id="anim-dunning"></div>
+</div></section>
+
+<section class="slide" id="s8"><div class="in">
+  <div class="k">Integrations</div>
+  <h2>Every number comes from its source. The app is the ledger; the vendors are the facts.</h2>
+  <div class="int">
+    <div class="stack">
+      <div class="box"><b>QuickBooks Online</b>Customers, invoices, TimeActivity, journal entries, payment webhooks. Payroll and direct deposit stay in QBO.</div>
+      <div class="box"><b>N-able N-sight</b>Clients, devices, failing checks, patch status — nightly, read-only.</div>
+      <div class="box"><b>Azure</b>Backup GB per client; also where the app runs. Entra ID signs techs in.</div>
+    </div>
+    <div class="core"><b>Camquest ledger</b><span>blocks · time · pay · receivables</span></div>
+    <div class="stack">
+      <div class="box"><b>Tech app</b>Phone-first time entry, pay view, RMM nudges.</div>
+      <div class="box"><b>Client portal</b>Hours, health, invoices, pay, buy a block.</div>
+      <div class="box"><b>Owner console</b>Approvals, receivables, month-end, reconciliation.</div>
+    </div>
+  </div>
+  <div id="anim-sync" style="margin-top:18px"></div>
+</div></section>
+
+<section class="slide" id="s9"><div class="in">
+  <div class="k">Built to be trusted</div>
+  <h2>The core is small on purpose, and strict on purpose.</h2>
+  <div class="princ">
+    <div><b>Double-entry, append-only ledger</b>Balances are computed from immutable postings. Mistakes are reversed, never edited. Every number can be rebuilt from history.</div>
+    <div><b>Whole numbers only</b>Hours stored as quarter-hours, money as cents. No rounding drift, ever.</div>
+    <div><b>Enforced workflow</b>Draft → Submitted → Approved → Synced → Locked. No self-approval. Locked periods change only by new postings.</div>
+    <div><b>Effective-dated rates</b>Client rates, pay rates and block prices carry valid-from dates. A January price change is one row; old blocks keep their rate.</div>
+    <div><b>Idempotent QuickBooks sync</b>A retry can never double-post. QBO can be down for a day and nothing is lost or duplicated.</div>
+    <div><b>Reconciliation as a gate</b>Ledger vs. QuickBooks vs. N-sight checked nightly; a mismatch blocks month-close until explained.</div>
+    <div><b>Full audit log</b>Who approved, who changed a rate, when, before and after.</div>
+    <div><b>Operational basics</b>Entra MFA, secrets in Key Vault, nightly backups with restore drills, monthly CSV export so the data is never trapped.</div>
+  </div>
+</div></section>
+
+<section class="slide" id="s10"><div class="in">
+  <div class="k">Roadmap</div>
+  <h2>Six phases to version 1, each usable on its own.</h2>
+  <div class="phases">
+    <div class="phase"><span class="n">1</span><b>QuickBooks Online</b><p>Migrate from Desktop, set up Payroll Core, run one payroll in parallel.</p></div>
+    <div class="phase"><span class="n">2</span><b>Ledger + time entry</b><p>Techs log time, owner approves. Works standalone alongside the bookkeeper for a month.</p></div>
+    <div class="phase"><span class="n">3</span><b>QBO sync</b><p>Customers, block sales, TimeActivity, month-end entries, payroll hours.</p></div>
+    <div class="phase"><span class="n">4</span><b>Invoicing &amp; receivables</b><p>Monthly run, due/past-due, automated reminders.</p></div>
+    <div class="phase"><span class="n">5</span><b>Portal + N-sight</b><p>Client portal, health panel, device picker, RMM device counts.</p></div>
+    <div class="phase"><span class="n">6</span><b>Reconciliation</b><p>The nightly checks and reports that let the bookkeeper role retire.</p></div>
+  </div>
+  <p class="lede" style="margin-top:22px">After v1, growth is a menu, not a mandate: Teams/text time entry, weekly client digests, Microsoft 365 tenant signals, license resale, project billing, AI-drafted suggestions for techs. <a href="../possibilities/" target="_blank" rel="noopener">See the Possibilities roadmap ↗</a></p>
+</div></section>
+
+<section class="slide gold" id="s11"><div class="in">
+  <div class="k">Decisions we need</div>
+  <h2>A handful of business rules shape the build. None are hard; all need an owner's call.</h2>
+  <div class="ask">
+    <div><b>When a block runs out mid-entry</b><span class="opts">Bill the overage at T&amp;M · overdraft into the next block · hold the entry until a block is sold</span></div>
+    <div><b>When a client is past due</b><span class="opts">Reminders only · reminders + no new block sales · reminders + pause non-emergency support at 30 days</span></div>
+    <div><b>Payment terms</b><span class="opts">Net 30 · Net 15 · due on receipt for blocks, Net 30 monthly</span></div>
+    <div><b>RMM fee structure</b><span class="opts">Flat per client with device count shown · per device · tiered</span></div>
+    <div><b>Who approves time</b><span class="opts">Drew only · Drew or Mark · auto-approve with weekly review</span></div>
+    <div><b>Block sale accounting</b><span class="opts">Liability recognized as burned (accrual) · revenue at sale (cash basis) — ten-minute question for the CPA</span></div>
+    <div><b>Tech pay compliance</b><span class="opts">Pay only on billed hours is piece-rate for W-2 staff; confirm minimum-wage and overtime handling with the payroll advisor. The ledger math is the same either way.</span></div>
+    <div><b>Salaried staff logging time</b><span class="opts">Burns the client block with no pay effect · salaried staff don't log</span></div>
+  </div>
+  <p class="lede" style="margin-top:18px">All of these can be picked by tapping in the mockup's Decisions section — the choices change how it behaves.</p>
+</div></section>
+
+<section class="slide dark" id="s12"><div class="in">
+  <div class="k">Next steps</div>
+  <h2>Decide the rules, move to QuickBooks Online, and run phase 2 alongside the bookkeeper for one month.</h2>
+  <ul class="clean" style="margin-top:16px">
+    <li>Review the mockup and pick the decisions above</li>
+    <li>Schedule the QuickBooks Desktop → Online migration and a parallel payroll run</li>
+    <li>Build phases 2–3; techs start logging in the app while the bookkeeper keeps the books for one month</li>
+    <li>Compare the two; when they match, phases 4–6 and hand-off</li>
+  </ul>
+  <div class="cta"><a href="../" target="_blank" rel="noopener">Open the working mockup ↗</a><a class="alt" href="../possibilities/" target="_blank" rel="noopener">Possibilities roadmap ↗</a></div>
+  <div class="byline">Drew Campbell · dcampbell@cqsys.com · Camquest Systems, LLC · 21175 Tomball Parkway #175, Houston, TX 77070 · (281) 880-6896</div>
+</div></section>
+
+<script>
+/* Camquest animations — shared between pages. Exposes window.CQAnim.{flow,dunning,sync}(hostEl) */
+(function () {
+'use strict';
+const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function player(host, steps, renderStep, opts) {
+  opts = opts || {};
+  const interval = opts.interval || 1700;
+  let i = 0, timer = null, playing = !reduced && opts.autoplay !== false;
+  host.classList.add('cq-anim');
+  host.innerHTML = '<div class="cq-stage"></div><div class="cq-bar"><button class="cq-btn cq-prev" aria-label="Previous step">‹</button><button class="cq-btn cq-play" aria-pressed="' + playing + '"></button><button class="cq-btn cq-next" aria-label="Next step">›</button><ol class="cq-steps"></ol></div>';
+  const stage = host.querySelector('.cq-stage'), list = host.querySelector('.cq-steps'), playBtn = host.querySelector('.cq-play');
+  list.innerHTML = steps.map((s, k) => '<li data-k="' + k + '"><button>' + esc(s) + '</button></li>').join('');
+  function draw() {
+    stage.innerHTML = renderStep(i);
+    list.querySelectorAll('li').forEach(li => li.setAttribute('aria-current', String(+li.dataset.k === i)));
+    playBtn.textContent = playing ? 'Pause' : 'Play';
+    playBtn.setAttribute('aria-pressed', String(playing));
+  }
+  function go(n) { i = (n + steps.length) % steps.length; draw(); }
+  function tick() { go(i + 1); }
+  function start() { if (timer) clearInterval(timer); timer = setInterval(tick, interval); }
+  function stop() { if (timer) clearInterval(timer); timer = null; }
+  playBtn.onclick = () => { playing = !playing; playing ? start() : stop(); draw(); };
+  host.querySelector('.cq-prev').onclick = () => { playing = false; stop(); go(i - 1); };
+  host.querySelector('.cq-next').onclick = () => { playing = false; stop(); go(i + 1); };
+  list.querySelectorAll('button').forEach(b => b.onclick = () => { playing = false; stop(); go(+b.parentNode.dataset.k); });
+  if ('IntersectionObserver' in window && playing) {
+    const io = new IntersectionObserver(en => { en.forEach(e => { if (e.isIntersecting) { if (playing && !timer) start(); } else stop(); }); }, { threshold: 0.3 });
+    io.observe(host);
+  } else if (playing) start();
+  draw();
+  return { go, stop };
+}
+
+/* ---------- 1. One quarter hour, end to end ---------- */
+function flow(host) {
+  const steps = ['Tech logs time', 'Rounding & minimums', 'Drew approves', 'Three postings at once', 'Month end: revenue recognized'];
+  const node = (cls, title, body, state) => '<div class="cq-node ' + cls + (state ? ' is-' + state : '') + '"><div class="cq-nt">' + title + '</div><div class="cq-nb">' + body + '</div></div>';
+  return player(host, steps, k => {
+    const entry = k === 0 ? 'Rick · Westheimer Dental<br><b>0.40 h</b> on-site · "replaced front-desk printer"' : 'Rick · Westheimer Dental<br><b>1.00 h</b> billed <span class="cq-dim">(0.40 → 0.50 → on-site min 1.00)</span>';
+    const block = k < 3 ? '<b>11.75 h</b> left of 20 @ $160' : '<b>10.75 h</b> left <span class="cq-delta cq-neg">−1.00</span>';
+    const pay = k < 3 ? 'Rick · $50/h<br><b>$0.00</b> this period' : 'Rick · $50/h<br><b>$50.00</b> <span class="cq-delta cq-pos">+$50.00</span>';
+    const qbo = k < 3 ? 'TimeActivity<br><span class="cq-dim">waiting</span>' : k === 3 ? 'TimeActivity<br><b>synced</b> · Rick · 1.0h · billable' : 'JournalEntry<br><b>Unearned −$160 → Revenue +$160</b>';
+    const barW = k < 3 ? 58.75 : 53.75;
+    return '<div class="cq-flow">' +
+      node('a', 'Time entry', entry, k === 0 ? 'active' : k === 1 ? 'active' : 'done') +
+      '<div class="cq-arrow' + (k >= 2 ? ' on' : '') + '">→</div>' +
+      node('b', 'Approval', k < 2 ? '<span class="cq-dim">Submitted · waiting for Drew</span>' : '<b>Approved</b> by Drew ✓', k === 2 ? 'active' : k > 2 ? 'done' : '') +
+      '<div class="cq-fan' + (k >= 3 ? ' on' : '') + '"><span>→</span><span>→</span><span>→</span></div>' +
+      '<div class="cq-col">' +
+        node('c', 'Client block', block + '<div class="cq-track"><div style="width:' + barW + '%"></div></div>', k === 3 ? 'active' : k > 3 ? 'done' : '') +
+        node('d', 'Tech pay accrual', pay, k === 3 ? 'active' : k > 3 ? 'done' : '') +
+        node('e', 'QuickBooks Online', qbo, k >= 3 ? 'active' : '') +
+      '</div></div>' +
+      '<p class="cq-cap">' + ['Rick logs 0.40 h on-site from his phone. Nothing has moved yet.', 'The app rounds up to the quarter hour, then applies the on-site 1-hour minimum. Rick sees the math before he submits.', 'Drew reviews the queue once a week and approves.', 'One approval writes three immutable postings: the client’s block drops 1.00 h, Rick accrues $50, and a TimeActivity goes to QBO for payroll.', 'At month end the app moves 1.00 h × $160 from Unearned Revenue to Service Revenue — the bookkeeping that used to be done by hand.'][k] + '</p>';
+  }, { interval: 2200 });
+}
+
+/* ---------- 2. Getting paid: due → past due → reminders → paid ---------- */
+function dunning(host) {
+  const steps = ['Invoice sent', 'Due in 3 days', 'Due today', '7 days past due', '14 days past due', 'Payment posts'];
+  const pts = [0, 60, 70, 82, 94, 100];
+  const marks = [['Issued', 0], ['Due', 70], ['+7', 82], ['+14', 94], ['+30', 100]];
+  return player(host, steps, k => {
+    const mails = [null, 'Friendly heads-up with pay link', 'Pay link · due today', 'Firmer tone · copy to Drew', 'Copy to Drew · portal banner turns red', null];
+    const status = ['Open · Net 30', 'Due soon', 'Due today', 'Past due 7 days', 'Past due 14 days', 'Paid · reminders stopped'][k];
+    const cls = k === 5 ? 'ok' : k >= 3 ? 'bad' : k >= 1 ? 'warn' : 'info';
+    return '<div class="cq-dun"><div class="cq-inv"><div class="cq-nt">INV-1031 · Bayou Title Co. · $499.44</div><span class="cq-pill cq-' + cls + '">' + status + '</span></div>' +
+      '<div class="cq-timeline"><div class="cq-tl-fill" style="width:' + pts[k] + '%"></div>' + marks.map(m => '<div class="cq-tl-mark" style="left:' + m[1] + '%"><i></i><span>' + m[0] + '</span></div>').join('') + '<div class="cq-tl-dot" style="left:' + pts[k] + '%"></div></div>' +
+      '<div class="cq-mail' + (mails[k] ? ' on' : '') + '">' + (mails[k] ? '✉ ' + esc(mails[k]) + ' → Janet R.' : (k === 5 ? '✓ QuickBooks reports payment · app stops reminders · block hours unlock' : '&nbsp;')) + '</div>' +
+      '<p class="cq-cap">' + ['The invoice goes out from QuickBooks with a pay-online link. The app knows the due date.', 'Three days before the due date the client gets a gentle nudge. No human involved.', 'On the due date, another. Still automatic.', 'A week past due the tone firms up and Drew is copied. The portal shows it in red.', 'At two weeks Drew is prompted to call. If the policy says so, new block sales pause.', 'The moment QBO reports payment, reminders stop and the client’s portal goes green. Nothing to mark by hand.'][k] + '</p></div>';
+  }, { interval: 2000 });
+}
+
+/* ---------- 3. Nightly sync ---------- */
+function sync(host) {
+  const steps = ['02:00 · N-sight devices & checks', '02:10 · Azure backup usage', '02:20 · QuickBooks invoices & payments', '02:30 · Reconcile', '06:00 · Ready for the day'];
+  return player(host, steps, k => {
+    const src = (name, sub, on, done) => '<div class="cq-src' + (on ? ' on' : '') + (done ? ' done' : '') + '"><div class="cq-nt">' + name + '</div><div class="cq-nb">' + sub + '</div></div>';
+    const checks = k >= 3 ? '<div class="cq-recon"><div>Block liability vs QBO 2300 <b class="cq-pos">match</b></div><div>AR vs QBO AR <b class="cq-pos">match</b></div><div>Approved hours vs TimeActivity <b class="cq-pos">match</b></div><div>Device counts vs RMM lines <b class="cq-neg">2 clients unbilled</b></div></div>' : '';
+    return '<div class="cq-sync"><div class="cq-srcs">' +
+      src('N-able N-sight', '33 devices · 2 failing checks · patch %', k === 0, k > 0) +
+      src('Azure', 'Backup GB per client', k === 1, k > 1) +
+      src('QuickBooks Online', 'Open invoices · payments posted', k === 2, k > 2) +
+      '</div><div class="cq-core' + (k >= 3 ? ' on' : '') + '"><div class="cq-nt">Camquest ledger</div><div class="cq-nb">' + (k < 3 ? 'receiving…' : k === 3 ? 'reconciling' : 'reconciled · suggestions drafted') + '</div>' + checks + '</div>' +
+      '<div class="cq-outs' + (k === 4 ? ' on' : '') + '"><div>Tech nudges</div><div>Portal health panels</div><div>Drew’s Monday digest</div></div></div>' +
+      '<p class="cq-cap">' + ['Every night the app pulls device lists and failing checks from N-sight — read-only, paced under its rate limit.', 'Then Azure backup usage per client, so the monthly invoice line is never typed.', 'Then QuickBooks: which invoices are open, which got paid overnight.', 'Then it checks that the ledger and QuickBooks agree. A mismatch blocks month-close until someone explains it.', 'By morning: techs have nudges, clients see fresh health panels, and Drew gets one digest instead of four logins.'][k] + '</p>';
+  }, { interval: 2000 });
+}
+
+const css = `
+.cq-anim{border:1px solid var(--line,#e4e2de);border-radius:12px;background:var(--panel,#fff);padding:16px 16px 10px;margin:14px 0;box-shadow:0 4px 18px rgba(20,18,14,.06)}
+.cq-stage{min-height:200px}
+.cq-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line,#e4e2de);padding-top:10px;margin-top:10px}
+.cq-btn{font:inherit;font-size:13px;border:1px solid var(--line-strong,#cfccc6);background:var(--panel,#fff);border-radius:7px;padding:4px 10px;cursor:pointer;color:var(--ink,#1c1c1a)}
+.cq-btn.cq-play{min-width:60px}
+.cq-btn.cq-play[aria-pressed="true"]{background:var(--ink,#1c1c1a);color:#fff;border-color:var(--ink,#1c1c1a)}
+.cq-steps{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap}
+.cq-steps button{font:inherit;font-size:12px;border:1px solid transparent;background:transparent;border-radius:999px;padding:3px 9px;color:var(--muted,#5f5e59);cursor:pointer}
+.cq-steps li[aria-current="true"] button{background:var(--accent-soft,#fbf1dc);color:var(--accent,#b07d14);border-color:var(--accent,#b07d14)}
+.cq-node{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;background:var(--panel-2,#f2f1ee);transition:border-color .25s,box-shadow .25s,background .25s;font-size:13.5px;min-width:0}
+.cq-node.is-active{border-color:var(--accent,#b07d14);box-shadow:0 0 0 3px var(--accent-soft,#fbf1dc);background:#fff}
+.cq-node.is-done{background:#fff}
+.cq-nt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#5f5e59);font-weight:600;margin-bottom:4px}
+.cq-nb{line-height:1.4}
+.cq-dim{color:var(--muted,#5f5e59)}
+.cq-delta{font-size:12px;font-weight:600;margin-left:4px}
+.cq-pos{color:var(--ok,#1d7646)} .cq-neg{color:var(--bad,#b3261e)}
+.cq-flow{display:grid;grid-template-columns:1.1fr 28px 1fr 28px 1.2fr;gap:8px;align-items:center}
+.cq-col{display:grid;gap:8px}
+.cq-arrow,.cq-fan{text-align:center;color:var(--line-strong,#cfccc6);font-size:22px;transition:color .25s}
+.cq-arrow.on,.cq-fan.on{color:var(--accent,#b07d14)}
+.cq-fan{display:grid;gap:30px}
+.cq-track{height:8px;background:var(--line,#e4e2de);border-radius:999px;overflow:hidden;margin-top:6px}
+.cq-track>div{height:100%;background:var(--ok,#1d7646);transition:width .6s}
+.cq-cap{font-size:13.5px;color:var(--ink-2,#3b3a36);margin:12px 0 0;min-height:40px}
+.cq-dun .cq-inv{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.cq-pill{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+.cq-pill.cq-info{background:#dde9f7;color:#2563a8}.cq-pill.cq-warn{background:#fbf0d6;color:#8a5a00}.cq-pill.cq-bad{background:#fbe8e6;color:#b3261e}.cq-pill.cq-ok{background:#e2f2e8;color:#1d7646}
+.cq-timeline{position:relative;height:8px;background:var(--line,#e4e2de);border-radius:999px;margin:26px 10px 34px}
+.cq-tl-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent,#b07d14);border-radius:999px;transition:width .6s}
+.cq-tl-mark{position:absolute;top:-4px;transform:translateX(-50%);text-align:center}
+.cq-tl-mark i{display:block;width:2px;height:16px;background:var(--line-strong,#cfccc6);margin:0 auto}
+.cq-tl-mark span{font-size:11px;color:var(--muted,#5f5e59);display:block;margin-top:2px}
+.cq-tl-dot{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--ink,#1c1c1a);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transform:translate(-50%,-50%);transition:left .6s}
+.cq-mail{border:1px dashed var(--line-strong,#cfccc6);border-radius:8px;padding:8px 12px;font-size:13.5px;color:var(--muted,#5f5e59);transition:all .25s;min-height:38px}
+.cq-mail.on{border-style:solid;border-color:var(--accent,#b07d14);background:var(--accent-soft,#fbf1dc);color:var(--ink,#1c1c1a)}
+.cq-sync{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:12px;align-items:start}
+.cq-srcs{display:grid;gap:8px}
+.cq-src{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--panel-2,#f2f1ee);transition:all .25s;opacity:.7}
+.cq-src.on{opacity:1;border-color:var(--accent,#b07d14);box-shadow:0 0 0 3px var(--accent-soft,#fbf1dc);background:#fff}
+.cq-src.done{opacity:1;background:#fff}
+.cq-core{border:2px solid var(--line-strong,#cfccc6);border-radius:12px;padding:12px 14px;font-size:13.5px;transition:all .25s;background:#fff;min-height:120px}
+.cq-core.on{border-color:var(--ink,#1c1c1a)}
+.cq-recon{margin-top:8px;display:grid;gap:4px;font-size:12.5px}
+.cq-recon div{display:flex;justify-content:space-between;gap:8px}
+.cq-outs{display:grid;gap:8px;opacity:.35;transition:opacity .25s}
+.cq-outs.on{opacity:1}
+.cq-outs div{border:1px solid var(--line,#e4e2de);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--accent-soft,#fbf1dc)}
+@media (max-width:760px){.cq-flow{grid-template-columns:1fr;gap:6px}.cq-arrow,.cq-fan{transform:rotate(90deg);height:24px;display:flex;align-items:center;justify-content:center}.cq-fan{gap:6px;grid-auto-flow:column}.cq-sync{grid-template-columns:1fr}.cq-outs{grid-auto-flow:column}}
+@media (prefers-reduced-motion:reduce){.cq-node,.cq-track>div,.cq-tl-fill,.cq-tl-dot,.cq-mail,.cq-src,.cq-core,.cq-outs{transition:none}}
+`;
+const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+window.CQAnim = { flow, dunning, sync };
+})();
+
+</script>
+<script>
+(function () {
+'use strict';
+const slides = Array.from(document.querySelectorAll('.slide'));
+const links = Array.from(document.querySelectorAll('.nav .links a'));
+const count = document.getElementById('count');
+let cur = 0;
+function setCur(i) { cur = i; links.forEach((a, k) => a.classList.toggle('cur', k === i)); count.textContent = (i + 1) + ' / ' + slides.length; }
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(en => { en.forEach(e => { if (e.isIntersecting) setCur(slides.indexOf(e.target)); }); }, { threshold: 0.5 });
+  slides.forEach(s => io.observe(s));
+}
+document.addEventListener('keydown', e => {
+  if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); slides[Math.min(cur + 1, slides.length - 1)].scrollIntoView({ behavior: 'smooth' }); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); slides[Math.max(cur - 1, 0)].scrollIntoView({ behavior: 'smooth' }); }
+});
+if (window.CQAnim) { CQAnim.flow(document.getElementById('anim-flow')); CQAnim.dunning(document.getElementById('anim-dunning')); CQAnim.sync(document.getElementById('anim-sync')); }
+setCur(0);
+})();
+</script>
+</body>
+</html>

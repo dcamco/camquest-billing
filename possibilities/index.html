@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camquest — Possibilities: the roadmap beyond v1</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f7f7f5; --panel: #ffffff; --panel-2: #f2f1ee;
+  --ink: #1c1c1a; --ink-2: #3b3a36; --muted: #5f5e59;
+  --line: #e4e2de; --line-strong: #cfccc6;
+  --accent: #b07d14; --accent-hover: #93660d; --accent-soft: #fbf1dc; --gold: #e0a028;
+  --ok: #1d7646; --ok-soft: #e2f2e8; --warn: #8a5a00; --warn-soft: #fbf0d6;
+  --bad: #b3261e; --bad-soft: #fbe8e6; --info: #2563a8; --info-soft: #dde9f7;
+  --shadow: 0 10px 30px rgba(20,18,14,.14), 0 2px 6px rgba(20,18,14,.08);
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font); }
+a { color: var(--accent); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 72px; }
+.hero { background: #1c1c1a; color: #f2f1ee; padding: 40px 0 36px; }
+.hero .wrap { padding-bottom: 0; }
+.logo { font-weight: 700; letter-spacing: .14em; font-size: 13px; }
+.logo span { color: var(--gold); }
+.hero h1 { font-size: 34px; line-height: 1.15; margin: 14px 0 10px; font-weight: 650; letter-spacing: -.01em; max-width: 780px; }
+.hero p { color: #cfccc6; max-width: 720px; font-size: 17px; margin: 0; }
+.pillnav { position: sticky; top: 0; z-index: 20; background: rgba(247,247,245,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.pillnav .in { max-width: 1080px; margin: 0 auto; padding: 10px 24px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.pillnav .in::-webkit-scrollbar { display: none; }
+.pillnav a { white-space: nowrap; text-decoration: none; color: var(--ink-2); border: 1px solid var(--line-strong); background: var(--panel); border-radius: 999px; padding: 5px 13px; font-size: 13px; flex: 0 0 auto; }
+.pillnav a:hover { border-color: var(--accent); color: var(--accent); }
+.pillnav a.ext { background: var(--ink); color: #fff; border-color: var(--ink); }
+.pillnav .sp { flex: 1; }
+h2 { font-size: 24px; margin: 48px 0 6px; font-weight: 650; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+h2 .v { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 10px; }
+h2 .theme { font-size: 14px; color: var(--muted); font-weight: 400; }
+.lede { color: var(--ink-2); max-width: 780px; margin: 0 0 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+.card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.card h3 { margin: 0; font-size: 16px; font-weight: 650; }
+.card p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 6px; }
+.tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
+.tag.val { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.tag.eff { background: var(--info-soft); color: var(--info); border-color: transparent; }
+.tag.dep { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.v1 { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 16px 18px; margin-top: 18px; }
+.v1 h3 { margin: 0 0 8px; font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.v1 ul { margin: 0; padding-left: 18px; columns: 2; column-gap: 28px; font-size: 14px; }
+.v1 li { break-inside: avoid; margin-bottom: 4px; }
+.rule { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 18px 0; max-width: 780px; }
+.legend { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+@media (max-width: 760px) { .hero h1 { font-size: 26px; } .v1 ul { columns: 1; } .wrap { padding: 0 14px 56px; } .pillnav .in { padding: 10px 14px; } }
+</style>
+</head>
+<body>
+<div class="hero"><div class="wrap">
+  <div class="logo">CAM<span>QUEST</span> · TIME &amp; BILLING</div>
+  <h1>Possibilities: what the system can grow into once the core is running.</h1>
+  <p>Version 1 is deliberately small — one ledger, three postings, QuickBooks and N-sight wired in. Everything below is a candidate for a later release. Each one either feeds that ledger or reads from it; nothing bypasses it.</p>
+</div></div>
+<nav class="pillnav"><div class="in">
+  <a href="#v1">v1 · Core</a><a href="#v2">v2 · Capture</a><a href="#v3">v3 · Connect</a><a href="#v4">v4 · Revenue</a><a href="#v5">v5 · Intelligence</a><a href="#v6">v6 · Scale</a>
+  <span class="sp"></span><a href="../" class="ext">Mockup ↗</a><a href="../presentation/" class="ext">Presentation ↗</a>
+</div></nav>
+
+<div class="wrap">
+  <div class="rule"><b>The rule for every item here:</b> it ships only when something hurts without it. Order and version numbers are a sequence, not a schedule — items move up when a client asks or a number is wrong, and move down when they don't.</div>
+
+  <h2 id="v1"><span class="v">v1</span> The core <span class="theme">— what we build first</span></h2>
+  <div class="v1"><h3>In scope for version 1</h3><ul>
+    <li>Prepaid blocks (20 h @ $160, 40 h @ $140) and T&amp;M at $180</li>
+    <li>Tech time entry from a phone: date, client, device, on-site/remote, notes; quarter-hour rounding with 1 h on-site / .25 h remote minimums</li>
+    <li>Weekly approval queue with edit, reject-with-reason, and period lock after payroll</li>
+    <li>Double-entry ledger: client block burn, tech pay accrual, unearned → recognized revenue</li>
+    <li>Tech "My pay" view: approved vs. pending, prior deposits</li>
+    <li>Internal / non-billable time and hours-worked vs. hours-billed for payroll compliance</li>
+    <li>QuickBooks Online sync: customers, block invoices, TimeActivity, month-end journal entry, payment webhook</li>
+    <li>Monthly invoice run: T&amp;M, Azure backup per GB, hardware, quarterly RMM with device counts</li>
+    <li>Receivables: due / past-due everywhere, aging, automated reminder cadence</li>
+    <li>Client portal: hours, health panel, work history, invoices, pay online, buy a block</li>
+    <li>N-sight nightly sync: device picker, failing-check nudges, portal health, RMM counts</li>
+    <li>Reconciliation gate, audit log, sales-tax tagging, Entra sign-in, nightly backups, CSV export</li>
+  </ul></div>
+
+  <h2 id="v2"><span class="v">v2</span> Capture &amp; communication <span class="theme">— make time entry disappear, make clients feel informed</span></h2>
+  <p class="lede">The fastest payback after v1: more hours captured, fewer month-end questions.</p>
+  <div class="grid">
+    <div class="card"><h3>Teams / text time entry</h3><p>Techs keep sending time the way they do today — a Teams message or SMS like "Bayou 1.5 remote, fixed scanner." The app parses it into a draft entry; the tech taps confirm. No new app to open.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">Claude API · Teams bot</span></div></div>
+    <div class="card"><h3>Weekly client digest</h3><p>Friday email per client: hours used this week, what was done, hours remaining, next invoice due. Kills most disputes before they start and quietly sells the next block.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Burn forecast &amp; renewal nudge</h3><p>"Gulf Coast runs out ~Dec 12 at current pace." Shown to the owner and, at the threshold, sent to the client with the 20/40 offer. Nobody finds out at zero.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Request intake in the portal</h3><p>Not a ticketing system — a form: what's wrong, how urgent. Becomes a draft entry the tech picks up, so every entry has a reference the client recognizes.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Approval sanity flags</h3><p>Before Drew approves: duplicate-looking entries, unusual durations for that tech, a note naming a different client, after-hours entries with no alert behind them. Yellow line, human decides.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Mileage on on-site visits</h3><p>A per-visit mileage field that flows to payroll as a reimbursement line instead of a spreadsheet someone forgets.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+  </div>
+
+  <h2 id="v3"><span class="v">v3</span> Connect <span class="theme">— every number comes from its source</span></h2>
+  <p class="lede">Each integration replaces a number someone types with one the system reads.</p>
+  <div class="grid">
+    <div class="card"><h3>Microsoft 365 tenant signals</h3><p>Read-only Graph access per client tenant: licensed accounts with no sign-in in 90 days, users without MFA, mailboxes near quota, subscription renewal dates. Feeds suggestions and the health panel.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">Graph app registration per tenant</span></div></div>
+    <div class="card"><h3>Microsoft license resale (CSP)</h3><p>If Camquest resells M365, Partner Center seat counts become a monthly invoice line per client. Same pattern as RMM device counts.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">Partner Center API</span></div></div>
+    <div class="card"><h3>Azure Cost Management per client</h3><p>Backup GB and any other per-client Azure spend pulled nightly, so the storage line is exact and margin includes real cost.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span><span class="tag dep">Azure subscription tagging</span></div></div>
+    <div class="card"><h3>Cove backup (when adopted)</h3><p>If backup moves to N-able Cove, usage rides the existing N-able sync — no new integration.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span><span class="tag dep">Cove</span></div></div>
+    <div class="card"><h3>Vendor bills matched to clients</h3><p>N-able, Microsoft and Azure invoices split by client, so margin per client is revenue minus tech pay minus what Camquest actually pays.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Medium effort</span><span class="tag dep">QBO Bills + classes</span></div></div>
+    <div class="card"><h3>Hardware → RMM asset link</h3><p>When a hardware line is billed, the app watches for the new device at that client in N-sight and links invoice to asset. Answers "when did we put that switch in?" instantly.</p><div class="meta"><span class="tag val">Low value</span><span class="tag eff">Low effort</span></div></div>
+  </div>
+
+  <h2 id="v4"><span class="v">v4</span> Revenue <span class="theme">— bill everything Camquest sells</span></h2>
+  <p class="lede">cqsys.com lists cloud, disaster recovery, procurement, web design, VoIP and Power Automate. Each becomes a line the engine already knows how to bill.</p>
+  <div class="grid">
+    <div class="card"><h3>Project work with milestones</h3><p>Migrations and website builds as fixed-price projects: deposit, progress, final. Distinct from blocks so techs don't log project time against a client's prepaid hours.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span></div></div>
+    <div class="card"><h3>Renewals tracker</h3><p>Domains, SSL, hosting plans with dates → auto-invoice 30 days out → the existing reminder cadence. Lapsed domains are how small IT shops lose clients.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>VoIP per-seat pass-through</h3><p>Monthly line per client from the VoIP provider's seat count.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span><span class="tag dep">Provider API or monthly import</span></div></div>
+    <div class="card"><h3>Rate escalators</h3><p>Block, T&amp;M and pay rates with effective dates. A January price change is one row; old blocks keep their rate.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Quote → block / hardware with e-sign</h3><p>Portal quotes the client accepts in one click; acceptance creates the QBO invoice. Worth it once block and hardware sales are frequent.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Medium effort</span></div></div>
+    <div class="card"><h3>CPA year-end pack</h3><p>One button: block liability roll-forward, revenue recognized by month, open AR, sales tax collected by item.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+  </div>
+
+  <h2 id="v5"><span class="v">v5</span> Intelligence <span class="theme">— the system suggests, people decide</span></h2>
+  <p class="lede">One firm rule: AI never writes a posting. It reads, flags, drafts and suggests; a human approves anything touching hours, money or a client.</p>
+  <div class="grid">
+    <div class="card"><h3>Engagement suggestions for techs</h3><p>Nightly: "Heights runs out Dec 12 — mention the 40-hr block Thursday." "Bayou pays for 3 unused M365 seats — offer to clean up." "No entries at Heights in 23 days — a 15-minute check-in." Accept / snooze / not relevant, with evidence attached.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">v3 signals</span></div></div>
+    <div class="card"><h3>Reconciliation explainer</h3><p>When the nightly check finds a mismatch, the model reads both sides and says why in plain English: "QBO has a manual journal entry dated 11/3 for $560 that isn't in the ledger."</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Billing anomaly digest</h3><p>Device count jumps overnight, a client's backup GB doubles, a block burns 30% faster than its history, a client not billed in 90 days. One Monday email to the owner.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Reminder tone per client</h3><p>Dunning emails drafted in the right register — first-time slip vs. chronic — from the client's payment history. Template approved once; the model fills it.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Month-end narrative</h3><p>"October: $18.4k recognized, $3.2k deferred, AR aging stable, margin 41%, Gulf Coast is 62% of T&amp;M — concentration risk." The CPA pack with a cover note.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Asset age &amp; refresh proposals</h3><p>From N-sight: workstations past OS end-of-support, servers past warranty. Drafts a refresh quote with the hardware line ready.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Medium effort</span></div></div>
+  </div>
+
+  <h2 id="v6"><span class="v">v6</span> Scale <span class="theme">— when there are more clients, techs, or both</span></h2>
+  <div class="grid">
+    <div class="card"><h3>Multi-contact portal with roles</h3><p>Owner sees invoices and pays; office manager sees hours only.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>One-tap satisfaction</h3><p>"How was this week? 👍 👎" in the digest. Two clicks of data per client per week; a quarter's trend shows who is about to leave.</p><div class="meta"><span class="tag val">Medium value</span><span class="tag eff">Low effort</span><span class="tag dep">v2 digest</span></div></div>
+    <div class="card"><h3>Margin &amp; utilization dashboards</h3><p>Revenue per client minus tech pay minus vendor cost; billed ÷ worked per tech; block-rate vs. T&amp;M mix. Which clients and rates actually work.</p><div class="meta"><span class="tag val">High value</span><span class="tag eff">Medium effort</span><span class="tag dep">v3 vendor bills</span></div></div>
+    <div class="card"><h3>PSA / documentation bolt-on</h3><p>If full ticketing with SLAs, dispatch calendars or a password vault is ever wanted, attach a product for that and keep this system as the billing and payroll truth.</p><div class="meta"><span class="tag val">Situational</span><span class="tag eff">Buy, don't build</span></div></div>
+    <div class="card"><h3>Client-side dispute button</h3><p>Question an entry within 7 days from the portal. The weekly digest with a reply-to address gets most of the way there first.</p><div class="meta"><span class="tag val">Low value</span><span class="tag eff">Low effort</span></div></div>
+    <div class="card"><h3>Native mobile app</h3><p>Only if the mobile web app proves limiting — push notifications for nudges would be the reason.</p><div class="meta"><span class="tag val">Low value</span><span class="tag eff">High effort</span></div></div>
+  </div>
+  <p class="legend">Value and effort are relative judgments to help ordering, not estimates. Dependencies name what has to exist first.</p>
+
+  <footer>Camquest Systems, LLC · Time &amp; Billing roadmap · November 2026 · Companion to the <a href="../">working mockup</a> and the <a href="../presentation/">presentation</a>.</footer>
+</div>
+</body>
+</html>
