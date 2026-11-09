@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Camquest Time &amp; Billing — Proposal</title>
+<meta name="description" content="Get paid up front, capture every hour, stop chasing. The proposal, in 13 short sections with animations.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Camquest Time & Billing — the proposal">
+<meta property="og:description" content="Get paid up front, capture every hour, stop chasing. The proposal, in 13 short sections with animations.">
+<meta property="og:image" content="https://dcamco.github.io/camquest-billing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1c1c1a">
 <style>
 :root {
   color-scheme: light;
@@ -39,14 +49,17 @@ h1 { font-size: clamp(34px, 5vw, 58px); line-height: 1.05; margin: 0 0 18px; fon
 h2 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.12; margin: 0 0 14px; font-weight: 650; letter-spacing: -.015em; max-width: 860px; }
 .lede { font-size: clamp(17px, 1.6vw, 20px); color: var(--ink-2); max-width: 760px; margin: 0 0 22px; }
 .dark .lede { color: #cfccc6; }
-.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
+.cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+.cols.five { grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.cols.five .card .big { font-size: 24px; }
+.cols.five .card p { font-size: 13.5px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
 .dark .card { background: #26241f; border-color: #3b3934; }
 .card h3 { margin: 0 0 6px; font-size: 17px; font-weight: 650; }
 .card p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
 .dark .card p { color: #cfccc6; }
 .card .big { font-size: 34px; font-weight: 650; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 6px; }
-.pain { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
+.pain { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 18px; margin-top: 18px; }
 .pain div { border-left: 3px solid var(--bad); padding: 6px 14px; font-size: 15px; }
 .pain b { display: block; }
 ul.clean { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; max-width: 760px; }
@@ -85,12 +98,12 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 .int .core { border: 2px solid var(--ink); border-radius: 16px; padding: 18px 20px; background: var(--panel); text-align: center; min-width: 200px; }
 .int .core b { display: block; font-size: 18px; }
 .int .core span { font-size: 13px; color: var(--muted); }
-.phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-top: 16px; }
+.phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
 .phase { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; position: relative; }
 .phase .n { display: inline-block; background: var(--ink); color: #fff; font-size: 11px; border-radius: 999px; padding: 1px 8px; margin-bottom: 6px; }
 .phase b { display: block; margin-bottom: 4px; }
 .phase p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
-.princ { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+.princ { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
 .princ div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
 .princ b { display: block; margin-bottom: 3px; }
 .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
@@ -99,12 +112,13 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 .dark .cta a.alt { border-color: #5a5852; color: #fff; }
 .byline { color: var(--muted); font-size: 14px; margin-top: 30px; }
 .dark .byline { color: #9c9a94; }
-.ask { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+.ask { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
 .ask div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; }
 .ask b { display: block; margin-bottom: 4px; }
 .ask .opts { color: var(--muted); font-size: 13px; }
 .hint { position: fixed; right: 16px; bottom: 14px; font-size: 12px; color: var(--muted); background: rgba(247,247,245,.9); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; z-index: 25; }
-@media (max-width: 860px) { .screens { grid-template-columns: 1fr; } .int { grid-template-columns: 1fr; } .int .core { min-width: 0; } .slide { padding: 40px 16px; min-height: 0; } .hint { display: none; } .nav .in { padding: 10px 14px; } .nav .count { display: none; } }
+@media (max-width: 1000px) { .cols, .cols.five, .pain, .phases, .princ, .ask { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 860px) { .screens { grid-template-columns: 1fr; } .screens .portal, .screens .phone { order: 2; } .cols, .cols.five, .pain, .phases, .princ, .ask { grid-template-columns: 1fr; } .int { grid-template-columns: 1fr; } .int .core { min-width: 0; } .slide { padding: 40px 16px; min-height: 0; } .hint { display: none; } .nav .in { padding: 10px 14px; } .nav .count { display: none; } }
 @media print { .nav, .hint { display: none; } .slide { min-height: 0; page-break-after: always; padding: 32px 24px; } .slide.dark { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 .journey { background: var(--accent-soft); border-bottom: 1px solid var(--line); font-size: 13.5px; }
 .journey .in { max-width: 1120px; margin: 0 auto; padding: 8px 24px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
@@ -247,7 +261,7 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
     <div class="stack">
       <div class="box"><b>QuickBooks Online</b>Customers, invoices, TimeActivity, journal entries, payment webhooks. Payroll and direct deposit stay in QBO.</div>
       <div class="box"><b>N-able N-sight</b>Clients, devices, failing checks, patch status — nightly, read-only.</div>
-      <div class="box"><b>Azure</b>Backup GB per client; also where the app runs. Entra ID signs techs in.</div>
+      <div class="box"><b>Azure</b>Backup GB per client. Also where the app runs — App Service, SQL, nightly Functions, Key Vault; on the order of $100/month. Entra ID signs staff in; clients use a verified-email sign-in.</div>
     </div>
     <div class="core"><b>Camquest ledger</b><span>blocks · time · pay · receivables</span></div>
     <div class="stack">
@@ -279,7 +293,7 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
 <section class="slide dark" id="s10"><div class="in">
   <div class="k">How we’ll know it’s working</div>
   <h2>Five numbers on the owner’s screen, every morning.</h2>
-  <div class="cols">
+  <div class="cols five">
     <div class="card"><div class="big">Prepaid share</div><p>Percent of revenue that arrived before the work. The whole point of blocks. Goal: up every quarter.</p></div>
     <div class="card"><div class="big">Days to paid</div><p>Average days from invoice to payment, by client. Down means the reminders and card-on-file are doing their job.</p></div>
     <div class="card"><div class="big">Hours captured</div><p>Billed hours vs. RMM activity and hours worked. Up means techs are logging and work isn’t going out free.</p></div>
@@ -293,7 +307,7 @@ ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--
   <div class="k">Roadmap</div>
   <h2>Six phases to version 1, each usable on its own.</h2>
   <div class="phases">
-    <div class="phase"><span class="n">1</span><b>QuickBooks Online</b><p>Migrate from Desktop, set up Payroll Core, run one payroll in parallel.</p></div>
+    <div class="phase"><span class="n">1</span><b>QuickBooks Online</b><p>Migrate from Desktop with Intuit’s converter, set up Payroll Core, run one payroll in parallel with Desktop before cutting over.</p></div>
     <div class="phase"><span class="n">2</span><b>Ledger + time entry</b><p>Techs log time, owner approves. Works standalone alongside the bookkeeper for a month.</p></div>
     <div class="phase"><span class="n">3</span><b>QBO sync</b><p>Customers, block sales, TimeActivity, month-end entries, payroll hours.</p></div>
     <div class="phase"><span class="n">4</span><b>Invoicing &amp; receivables</b><p>Monthly run, due/past-due, automated reminders, card on file.</p></div>
